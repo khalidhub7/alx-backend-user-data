@@ -1,0 +1,1 @@
+personal_data 🔒 is a service for managing personal user details 📋. It securely handles storage, updates, and retrieval of sensitive information 🔐, ideal for keeping user data organized and protected 🛡️.
