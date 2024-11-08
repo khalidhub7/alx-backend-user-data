@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """ regex-ing """
 import re
-from typing import AnyStr, List
+from typing import List
 
 
 def filter_datum(
-        fields: List[str], redaction: AnyStr,
-        message: AnyStr, separator: AnyStr) -> AnyStr:
+        fields: List[str], redaction: str,
+        message: str, separator: str) -> str:
     """ obfuscate specified fields
 in a log message """
     msgsplit = message.split(separator)
