@@ -4,7 +4,8 @@ import re
 
 
 def filter_datum(
-        fields, redaction, message, separator):
+    fields: list, redaction: str, message: str, separator: str
+) -> str:
     """ obfuscate specified fields
 in a log message """
     msgsplit = message.split(separator)
