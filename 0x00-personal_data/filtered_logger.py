@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ regex-ing """
-from re import sub
+import re
 
 
 def filter_datum(
@@ -15,7 +15,7 @@ in a log message """
             msgdict[key] = value
     for field in fields:
         if field in msgdict:
-            message = sub(
+            message = re.sub(
                 "{}={}".format(field, msgdict[field]),
                 "{}={}".format(field, redaction),
                 message)
