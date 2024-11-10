@@ -30,7 +30,7 @@ class RedactingFormatter(logging.Formatter):
         """
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s\
-%(asctime)-15s: %(message)s"
+ %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
     def __init__(self, fields):
@@ -41,8 +41,7 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord
                ) -> str:
-        """
-format the log record, redacting sensitive fields. """
+        """ format the log record """
         record.msg = filter_datum(
             self.fields, RedactingFormatter.REDACTION,
             record.msg, RedactingFormatter.SEPARATOR)
