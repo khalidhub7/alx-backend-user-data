@@ -33,7 +33,7 @@ class RedactingFormatter(logging.Formatter):
  %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields):
+    def __init__(self, fields: List[str]):
         """ initialize """
         super(RedactingFormatter, self
               ).__init__(self.FORMAT)
