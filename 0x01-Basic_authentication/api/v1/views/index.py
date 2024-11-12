@@ -32,3 +32,12 @@ def stats() -> str:
 def unauthorized_page() -> str:
     """ return unauthorized_page """
     abort(401)
+
+
+@app_views.route(
+    '/forbidden', methods=['GET'],
+    strict_slashes=False)
+def forbidden() -> str:
+    """user is authenticate but not
+    allowed to access to a resource"""
+    abort(403)
