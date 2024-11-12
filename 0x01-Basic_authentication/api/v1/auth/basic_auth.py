@@ -66,10 +66,12 @@ based on email and password """
         if not isinstance(user_pwd, str):
             return None
 
-        user_objs = User.search(
-            {'email': user_email})
-        if len(user_objs) == 0:
+        try:
+            user_objs = User.search(
+                {'email': user_email})
+            for user_obj in user_objs:
+                if user_obj.is_valid_password(user_pwd):
+                    return user_obj
+        except Exception:
             return None
-        for user_obj in user_objs:
-            if user_obj.is_valid_password(user_pwd):
-                return user_obj
+        return None
