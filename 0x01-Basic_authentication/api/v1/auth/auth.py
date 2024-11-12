@@ -13,7 +13,18 @@ authentication for accessing resources """
     ) -> bool:
         """ Determine if a given path
 requires authentication """
-        return False
+        if path is None or excluded_paths is None:
+            return True
+        if len(excluded_paths) == 0:
+            return True
+        if (path + '/') in excluded_paths:
+            return False
+        if path in excluded_paths:
+            return False
+        if (path + '/') not in excluded_paths:
+            return True
+        if path not in excluded_paths:
+            return True
 
     def authorization_header(
             self, request=None) -> str:
