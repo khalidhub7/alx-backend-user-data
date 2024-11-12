@@ -53,21 +53,23 @@ class BasicAuth(Auth):
             decoded_base64_authorization_header.split(':'))
 
     def user_object_from_credentials(
-            self,
-            user_email: str,
-            user_pwd: str) -> TypeVar('User'):
-        """retrieve a User instance
-based on email and password"""
-        if user_email is None or not isinstance(user_email, str):
+            self, user_email: str, user_pwd: str
+    ) -> TypeVar(User):
+        """ retrieve a User instance
+based on email and password """
+        if user_email is None:
             return None
-        if user_pwd is None or not isinstance(user_pwd, str):
+        if user_pwd is None:
+            return None
+        if not isinstance(user_email, str):
+            return None
+        if not isinstance(user_pwd, str):
             return None
 
-        user_objs = User.search({'email': user_email})
+        user_objs = User.search(
+            {'email': user_email})
         if len(user_objs) == 0:
             return None
-
-        user_obj = user_objs[0]
-        if not user_obj.is_valid_password(user_pwd):
-            return None
-        return user_obj
+        for user_obj in user_objs:
+            if user_obj.is_valid_password(user_pwd):
+                return user_obj
