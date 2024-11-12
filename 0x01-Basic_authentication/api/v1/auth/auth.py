@@ -30,10 +30,16 @@ requires authentication """
             self, request=None) -> str:
         """Retrieve the value of the
 Authorization header from a request"""
-        return request
+        if request is None:
+            return None
+        if not request.headers.get(
+                'Authorization'):
+            return None
+        return request.headers.get(
+            'Authorization')
 
     def current_user(self, request=None
                      ) -> TypeVar('User'):
         """Retrieve the current user
-based on the request """
-        return request
+based on the request"""
+        return None
