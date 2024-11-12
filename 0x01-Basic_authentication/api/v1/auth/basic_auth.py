@@ -70,8 +70,8 @@ based on email and password """
                 {'email': user_email})
             for user_obj in user_objs:
                 if user_obj.is_valid_password(
-                    user_pwd):
+                        user_pwd):
                     return user_obj
         except Exception:
-            pass
+            return None
         return None
