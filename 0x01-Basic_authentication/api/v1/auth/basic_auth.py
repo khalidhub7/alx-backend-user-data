@@ -73,5 +73,5 @@ based on email and password """
                         user_pwd):
                     return user_obj
         except Exception:
-            return None
+            pass
         return None
