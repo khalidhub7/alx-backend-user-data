@@ -35,5 +35,5 @@ Authorization header from a request"""
     def current_user(self, request=None
                      ) -> TypeVar('User'):
         """Retrieve the current user
-based on the request"""
+based on the request """
         return request
