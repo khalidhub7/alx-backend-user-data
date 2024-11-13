@@ -17,18 +17,19 @@ requires authentication """
             return True
         if len(excluded_paths) == 0:
             return True
-        # if *
-        if '*' in excluded_paths:
 
-            # it give something like ['api', 'v1', 'status']
-            p = list(filter(None, path.split('/')))
-            for ex_p in excluded_paths:
-                find = list(filter(None, ex_p.split('/')))
-                if p[:-1] == find[:-1]:
-                    find = find[-1].split('*')[0]
-                    if p[-1].startswith(find):
-                        return False
-            return True
+        for i in excluded_paths:
+            # if *
+            if '*' in i:
+                # it give something like ['api', 'v1', 'status']
+                p = list(filter(None, path.split('/')))
+                for ex_p in excluded_paths:
+                    find = list(filter(None, ex_p.split('/')))
+                    if p[:-1] == find[:-1]:
+                        find = find[-1].split('*')[0]
+                        if p[-1].startswith(find):
+                            return False
+                return True
         # if not *
         if (path + '/') in excluded_paths:
             return False
