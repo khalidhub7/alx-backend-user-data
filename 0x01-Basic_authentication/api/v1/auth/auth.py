@@ -17,14 +17,30 @@ requires authentication """
             return True
         if len(excluded_paths) == 0:
             return True
+
         if (path + '/') in excluded_paths:
+            if '*' in excluded_paths:
+                p = excluded_paths.split('/')[-1]
+                p = p.split('*', 1)[0]
+                if path.endswith(p + '/'):
+                    return False
+                else:
+                    return True
             return False
         if path in excluded_paths:
+            if '*' in excluded_paths:
+                p = excluded_paths.split('/')[-1]
+                p = p.split('*', 1)[0]
+                if path.endswith(p):
+                    return False
+                else:
+                    return True
             return False
-        if (path + '/') not in excluded_paths:
+        return True
+        """ if (path + '/') not in excluded_paths:
             return True
         if path not in excluded_paths:
-            return True
+            return True """
 
     def authorization_header(
             self, request=None) -> str:
