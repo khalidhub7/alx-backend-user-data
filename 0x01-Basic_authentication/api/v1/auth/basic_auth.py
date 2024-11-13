@@ -75,3 +75,17 @@ based on email and password """
         except Exception:
             pass
         return None
+
+    def current_user(
+            self, request=None) -> TypeVar(User):
+        """  """
+        header = self.authorization_header(
+            request)
+        base_64 = self.extract_base64_authorization_header(
+            header)
+        decode = self.decode_base64_authorization_header(
+            base_64)
+        (email, pwsd) = self.extract_user_credentials(decode)
+        user = self.user_object_from_credentials(
+            email, pwsd)
+        return user
