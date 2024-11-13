@@ -78,7 +78,7 @@ based on email and password """
 
     def current_user(
             self, request=None) -> TypeVar(User):
-        """  """
+        """ Current user """
         header = self.authorization_header(
             request)
         base_64 = self.extract_base64_authorization_header(
