@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ session authentication Module """
 import os
+from models.user import User
 from uuid import uuid4
 from api.v1.auth.auth import Auth
 
@@ -33,3 +34,10 @@ returns a User ID based on a Session ID """
         value = SessionAuth.user_id_by_session_id.get(
             session_id)
         return value
+
+    def current_user(self, request=None):
+        """ returns a User instance
+based on a cookie value """
+        cookie = self.session_cookie(request)
+        user_id = self.user_id_for_session_id(cookie)
+        return User.get(user_id)
