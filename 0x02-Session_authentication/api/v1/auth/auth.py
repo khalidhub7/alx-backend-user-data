@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ handling authentication """
+from os import getenv
 from flask import request
 from typing import List, TypeVar
 
@@ -57,3 +58,12 @@ Authorization header from a request"""
         """Retrieve the current user
 based on the request"""
         return None
+
+    def session_cookie(self, request=None):
+        """ Retrieve the session cookie
+value from the request """
+        if request is None:
+            return None
+        name = getenv('SESSION_NAME')
+        cookie = request.cookies.get(name)
+        return cookie
