@@ -6,35 +6,23 @@ from os import getenv
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
-import os
-
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
+auth_type = getenv('AUTH_TYPE')
 
-AUTH_TYPE = os.getenv('AUTH_TYPE')
 
-if AUTH_TYPE == 'auth':
-    from api.v1.auth.auth import Auth
-    auth = Auth()
-
-if AUTH_TYPE == 'basic_auth':
+if auth_type == 'basic_auth':
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
-
-if AUTH_TYPE == 'session_auth':
+if auth_type == 'session_auth':
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
-
-if AUTH_TYPE == 'session_exp_auth':
-    from api.v1.auth.session_exp_auth import SessionExpAuth
-    auth = SessionExpAuth()
-
-if AUTH_TYPE == 'session_db_auth':
-    from api.v1.auth.session_db_auth import SessionDBAuth
-    auth = SessionDBAuth()
+else:
+    from api.v1.auth.auth import Auth
+    auth = Auth()
 
 
 @app.errorhandler(404)
@@ -46,34 +34,30 @@ def not_found(error) -> str:
 
 @app.errorhandler(401)
 def unauthorized(error) -> str:
-    """ Unauthorized handler
-    """
+    """ unauthorized handler """
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
-def forbidden(error) -> str:
-    """ Forbidden handler
-    """
+def not_allowed(error) -> str:
+    """ /forbidden handler """
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
-def before_request() -> str:
-    """ Before request handler
-    """
+def before_req() -> str:
+    ''' Handle actions
+before each request '''
     if auth is not None:
+        request.current_user = auth.current_user(request)
         if auth.require_auth(
-                request.path,
-                ['/api/v1/status/',
-                    '/api/v1/unauthorized/',
-                    '/api/v1/forbidden/',
-                    '/api/v1/auth_session/login/']):
-            if auth.authorization_header(request) is None and \
-                    auth.session_cookie(request) is None:
+            request.path,
+            ['/api/v1/status/', '/api/v1/unauthorized/',
+             '/api/v1/forbidden/']):
+            if auth.authorization_header(
+                    request) is None:
                 abort(401)
-            request.current_user = auth.current_user(request)
-            if request.current_user is None:
+            if auth.current_user(request) is None:
                 abort(403)
 
 
