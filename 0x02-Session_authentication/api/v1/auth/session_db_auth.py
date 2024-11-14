@@ -1,47 +1,38 @@
 #!/usr/bin/env python3
-""" session_db_auth module
-"""
-from models.user_session import UserSession
+""" SessionDBAuth for storing session data in the database """
 from api.v1.auth.session_exp_auth import SessionExpAuth
-
-
-from os import getenv
+from models.user_session import UserSession
 
 
 class SessionDBAuth(SessionExpAuth):
-    """ session db auth class
-    """
+    """ Handles session storage in the database """
+
     def create_session(self, user_id=None):
-        """Create session method
-        """
+        """ Create and store a new UserSession, returning session_id """
         session_id = super().create_session(user_id)
-        if session_id is None:
+        if not session_id:
             return None
         user_session = UserSession(user_id=user_id, session_id=session_id)
-        user_session.save()
+        user_session.save()  # Assuming `save()` writes to file
         return session_id
 
     def user_id_for_session_id(self, session_id=None):
-        """User id for session id method
-        """
-        if session_id is None:
+        """ Retrieve user_id from the session database """
+        if not session_id:
             return None
-        if super().user_id_for_session_id(session_id) is None:
+        # Assuming `load()` retrieves from file
+        user_session = UserSession.load(session_id=session_id)
+        if not user_session:
             return None
-        user_session = UserSession.search({'session_id': session_id})
-        if user_session:
-            return user_session[0].user_id
-        return None
+        return user_session.user_id
 
     def destroy_session(self, request=None):
-        """Destroy session method
-        """
-        if not super().destroy_session(request):
-            return False
+        """ Remove UserSession from database based on session_id """
         session_id = self.session_cookie(request)
-        if session_id:
-            user_session = UserSession.search({'session_id': session_id})
-            if user_session is None or user_session == []:
-                return False
-            user_session[0].remove()
-            return True
+        if not session_id:
+            return False
+        user_session = UserSession.load(session_id=session_id)
+        if not user_session:
+            return False
+        user_session.remove()  # Assuming `remove()` deletes from file
+        return True
