@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ session authentication Module """
+from os import getenv
 from models.user import User
 from uuid import uuid4
 from api.v1.auth.auth import Auth
@@ -40,3 +41,17 @@ based on a cookie value """
         cookie = self.session_cookie(request)
         user_id = self.user_id_for_session_id(cookie)
         return User.get(user_id)
+
+    def destroy_session(self, request=None):
+        """ deletes the user session / logout """
+        if request is None:
+            return False
+        session_id = self.session_cookie(request)
+        if session_id is None:
+            return False
+        if not self.user_id_for_session_id(session_id):
+            return False
+        session = self.user_id_by_session_id[session_id]
+        if session:
+            del self.user_id_by_session_id[session_id]
+            return True

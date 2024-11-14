@@ -3,7 +3,7 @@
 import os
 from models.user import User
 from api.v1.views import app_views
-from flask import request, jsonify
+from flask import request, jsonify, abort
 
 
 @app_views.route('/auth_session/login',
@@ -38,3 +38,15 @@ password"}), 401
     responce = jsonify(user.to_json())
     responce.set_cookie(os.getenv('SESSION_NAME'), session_id)
     return responce
+
+
+@app_views.route('/auth_session/logout',
+                 methods=['DELETE'], strict_slashes=False)
+def log_out():
+    """ Logout """
+    from api.v1.app import auth
+    logout = auth.destroy_session(request)
+    if logout is False:
+        abort(404)
+    else:
+        return jsonify({}), 200
