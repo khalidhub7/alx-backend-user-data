@@ -49,7 +49,6 @@ def before_req() -> str:
     ''' Handle actions
 before each request '''
     if auth is not None:
-        request.current_user = auth.current_user(request)
         if auth.require_auth(
             request.path,
             ['/api/v1/status/', '/api/v1/unauthorized/',
@@ -57,6 +56,7 @@ before each request '''
             if auth.authorization_header(
                     request) is None:
                 abort(401)
+            request.current_user = auth.current_user(request)
             if auth.current_user(request) is None:
                 abort(403)
 
