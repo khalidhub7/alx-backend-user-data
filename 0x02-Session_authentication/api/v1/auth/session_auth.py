@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """ session authentication Module """
-import os
 from models.user import User
 from uuid import uuid4
 from api.v1.auth.auth import Auth
