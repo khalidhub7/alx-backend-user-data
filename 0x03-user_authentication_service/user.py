@@ -14,9 +14,3 @@ class User(Base):
     hashed_password = Column(String(250), nullable=False)
     session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
-
-
-""" db_url = "mysql+pymysql://root:0000\
-@localhost/user_auth_test"
-engine = create_engine(db_url, echo=True)
-Base.metadata.create_all(engine) """
