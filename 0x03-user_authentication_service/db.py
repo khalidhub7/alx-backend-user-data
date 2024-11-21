@@ -7,6 +7,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import User
 from user import Base
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 
 
 class DB:
@@ -43,3 +45,15 @@ class DB:
         self._session.add(new_user)
         self._session.commit()
         return new_user
+
+    def find_user_by(self, **kwargs):
+        """ find a user by given attributes """
+        columns = User.__table__.columns.keys()
+        for attr, val in kwargs.items():
+            if attr in columns:
+                result = self._session.query(User).filter(
+                    getattr(User, attr) == val).first()
+                if result:
+                    return result
+                raise NoResultFound
+            raise InvalidRequestError
