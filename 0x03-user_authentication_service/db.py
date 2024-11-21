@@ -6,7 +6,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import User
-
 from user import Base
 
 
@@ -18,7 +17,7 @@ class DB:
         """Initialize a new DB instance
         """
         self._engine = create_engine(
-            "sqlite:///a.db", echo=True)
+            "sqlite:///a.db", echo=False)
         ''' self._engine = create_engine(
             "mysql+pymysql://root:0000\
 @localhost/user_auth_test", echo=True) '''
