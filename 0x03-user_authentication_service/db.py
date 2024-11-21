@@ -5,8 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+
+from user import Basei
 from user import User
-from user import Base
 
 
 class DB:
@@ -16,8 +17,7 @@ class DB:
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
-        self._engine = create_engine(
-            "sqlite:///a.db", echo=True)
+        self._engine = create_engine("sqlite:///a.db", echo=True)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -27,8 +27,7 @@ class DB:
         """Memoized session object
         """
         if self.__session is None:
-            DBSession = sessionmaker(
-                bind=self._engine)
+            DBSession = sessionmaker(bind=self._engine)
             self.__session = DBSession()
         return self.__session
 
