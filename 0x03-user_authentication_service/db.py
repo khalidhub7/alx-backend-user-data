@@ -47,7 +47,7 @@ class DB:
         self._session.commit()
         return new_user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs) -> User:
         """ find a user by given attributes """
         columns = User.__table__.columns.keys()
         for attr, val in kwargs.items():
