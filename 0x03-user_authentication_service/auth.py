@@ -69,8 +69,11 @@ to interact with the authentication database.
         """ find user by session ID """
         if session_id is None:
             return None
-        user = self._db.find_user_by(
-            session_id=session_id)
-        if user is None:
+        try:
+            user = self._db.find_user_by(
+                session_id=session_id)
+            return user
+        except Exception:
             return None
-        return user
+        finally:
+            pass
