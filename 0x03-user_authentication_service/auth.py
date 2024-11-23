@@ -99,5 +99,5 @@ to interact with the authentication database.
             self._db.update_user(
                 user.id, reset_token=reset_token)
             return reset_token
-        except Exception:
+        except NoResultFound:
             return ValueError
