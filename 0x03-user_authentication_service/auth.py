@@ -96,8 +96,8 @@ to interact with the authentication database.
         try:
             user = self._db.find_user_by(email=email)
             reset_token = _generate_uuid()
-            user.reset_token = reset_token
-            self._db.__session.commit()
+            self._db.update_user(
+                user.id, reset_token=reset_token)
             return reset_token
         except NoResultFound:
             raise ValueError
