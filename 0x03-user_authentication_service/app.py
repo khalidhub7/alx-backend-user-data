@@ -103,7 +103,7 @@ def update_password():
                 reset_token, new_password)
             return make_response(jsonify(
                 {"email": email,
-                 "message": "Password updated"}))
+                 "message": "Password updated"})), 200
     except Exception:
         abort(403)
 
