@@ -98,6 +98,6 @@ to interact with the authentication database.
             reset_token = _generate_uuid()
             self._db.update_user(
                 user.id, reset_token=reset_token)
-            return user.reset_token
-        except ValueError:
-            return None
+            return reset_token
+        except Exception:
+            return ValueError
