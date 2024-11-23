@@ -89,3 +89,13 @@ to interact with the authentication database.
             return user.session_id
         except Exception:
             return None
+
+    def get_reset_password_token(
+            self, email: str) -> str:
+        """ reset password token """
+        try:
+            user = self._db.find_user_by(email=email)
+            user.reset_token = str(uuid4())
+            return user.reset_token
+        except ValueError:
+            pass
