@@ -101,3 +101,17 @@ to interact with the authentication database.
             return reset_token
         except NoResultFound:
             raise ValueError
+
+    def update_password(
+            self, reset_token: str, password: str
+    ) -> None:
+        """ update password """
+        try:
+            user = self._db.find_user_by(
+                reset_token=reset_token)
+            paswd = _hash_password(password)
+            self._db.update_user(
+                user.id, hashed_password=paswd,
+                reset_token=None)
+        except NoResultFound:
+            raise ValueError
