@@ -70,7 +70,7 @@ def profile():
     """ _user profile """
     try:
         session_id = request.cookies.get('session_id')
-        user = AUTH._db.find_user_by(session_id=session_id)
+        user = AUTH.get_user_from_session_id(session_id)
         return jsonify({"email": user.email}), 200
     except Exception:
         abort(403)
