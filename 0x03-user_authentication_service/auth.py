@@ -33,14 +33,16 @@ to interact with the authentication database.
             passwd = _hash_password(password)
             return self._db.add_user(email, passwd)
 
-    def valid_login(self, email: str, password: str) -> bool:
-        """Validate login
-        """
+    def valid_login(self, email: str,
+                    password: str) -> bool:
+        """ validate login """
         try:
-            user = self._db.find_user_by(email=email)
-            if checkpw(password.encode('utf-8'), user.hashed_password):
-                return True
-            else:
-                return False
-        except NoResultFound:
-            return False
+            user = self._db._session.query(
+                User).filter_by(email=email).first()
+            if user:
+                paswd = user.hashed_password
+                if checkpw(password.encode('utf-8'), paswd):
+                    return True
+        except Exception:
+            pass
+        return False
