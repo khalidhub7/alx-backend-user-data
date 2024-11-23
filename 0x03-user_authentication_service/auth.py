@@ -37,8 +37,8 @@ to interact with the authentication database.
                     password: str) -> bool:
         """ validate login """
         try:
-            user = self._db._session.query(
-                User).filter_by(email=email).first()
+            user = self._db.find_user_by(
+                email=email)
             if user:
                 paswd = user.hashed_password
                 if checkpw(password.encode('utf-8'), paswd):
