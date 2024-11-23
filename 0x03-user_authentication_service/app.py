@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """ flask app """
-from auth import Auth
-from flask import Flask, jsonify, request, make_response, abort, redirect
 from db import DB
+from auth import Auth
+from flask import (Flask, jsonify, request,
+                   make_response, abort, redirect)
 app = Flask(__name__)
 AUTH = Auth()
 
 
 @app.route('/', methods=['GET'],
-           strict_slashes=True)
+           strict_slashes=False)
 def basic():
     """ basic route """
     return jsonify(
@@ -16,7 +17,7 @@ def basic():
 
 
 @app.route('/users', methods=['POST'],
-           strict_slashes=True)
+           strict_slashes=False)
 def register():
     """ register page """
     email = request.form.get('email')
@@ -34,7 +35,7 @@ email already registered"}), 400
 
 
 @app.route('/sessions', methods=['POST'],
-           strict_slashes=True)
+           strict_slashes=False)
 def login():
     """ login page """
     email = request.form.get('email')
@@ -51,14 +52,14 @@ def login():
 
 
 @app.route('/sessions', methods=['DELETE'],
-           strict_slashes=True)
+           strict_slashes=False)
 def logout():
     """ logout page """
     try:
         session_id = request.cookies.get('session_id')
         user = AUTH.get_user_from_session_id(session_id)
         AUTH.destroy_session(user.id)
-        redirect('/')
+        return redirect('/')
     except Exception:
         abort(403)
 
