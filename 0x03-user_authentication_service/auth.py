@@ -77,3 +77,15 @@ to interact with the authentication database.
             return None
         finally:
             pass
+
+    def destroy_session(
+            self, user_id: int) -> None:
+        """ destroy session """
+        try:
+            user = self._db.find_user_by(
+                id=user_id)
+            user.session_id = None
+            self._db._session.commit()
+            return user.session_id
+        except Exception:
+            return None
