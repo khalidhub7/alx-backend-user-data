@@ -16,7 +16,7 @@ def _hash_password(
 
 def _generate_uuid() -> str:
     """ generate uuids """
-    return str(uuid4)
+    return str(uuid4())
 
 
 class Auth:
