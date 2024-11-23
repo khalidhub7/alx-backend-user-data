@@ -95,7 +95,8 @@ to interact with the authentication database.
         """ reset password token """
         try:
             user = self._db.find_user_by(email=email)
-            user.reset_token = str(uuid4())
+            user.reset_token = _generate_uuid()
+            self._db.__session.commit()
             return user.reset_token
         except ValueError:
             pass
