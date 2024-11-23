@@ -38,8 +38,8 @@ to interact with the authentication database.
         try:
             user = self._db._session.query(
                 User).filter_by(email=email).first()
-            paswd = user.hashed_password
-            if user and paswd:
+            if user:
+                paswd = user.hashed_password
                 if checkpw(password.encode('utf-8'), paswd):
                     return True
         except Exception:
