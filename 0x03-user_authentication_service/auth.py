@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ hashing password """
 from db import DB
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy.orm.exc import NoResultFound
 from user import User
 
@@ -32,3 +32,16 @@ to interact with the authentication database.
         except NoResultFound:
             passwd = _hash_password(password)
             return self._db.add_user(email, passwd)
+
+    def valid_login(self, email, password):
+        """ validate login """
+        try:
+            user = self._db._session.query(
+                User).filter_by(email=email).first()
+            paswd = user.hashed_password
+            if user and paswd:
+                if checkpw(password.encode('utf-8'), paswd):
+                    return True
+        except Exception:
+            pass
+        return False
