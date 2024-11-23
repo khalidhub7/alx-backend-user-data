@@ -21,7 +21,6 @@ def register():
     password = request.form.get('password')
 
     try:
-        check = DB.find_user_by(email=email)
         AUTH.register_user(email, password)
         return jsonify(
             {"email": "{}".format(email),
