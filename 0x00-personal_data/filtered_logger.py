@@ -20,35 +20,32 @@ def filter_datum(fields: List[str], redaction: str,
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
-        """
+    """ Redacting Formatter class """
     REDACTION = "***"
-    FORMAT = "[HOLBERTON] %(name)s %(levelname)s\
- %(asctime)-15s: %(message)s"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s \
+%(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
         """ initialize """
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
-    def format(self, record: logging.LogRecord
-               ) -> str:
-        """ format the log record """
-        record.msg = filter_datum(
-            self.fields, RedactingFormatter.REDACTION,
-            record.msg, RedactingFormatter.SEPARATOR)
+
+    def format(self, record: logging.LogRecord) -> str:
+        """ custom format """
+        record.msg = filter_datum(self.fields, self.REDACTION,
+                                  record.msg, self.SEPARATOR)
         return super().format(record)
 
 
 def get_logger() -> logging.Logger:
-    """
-    create logger named 'user_data'
-    logger is like a note"""
-    logger = logging.getLogger("user_data")
+    """ create logger named 'user_data'
+    logger is like a note """
+    logger = logging.getLogger('user_data')
     logger.setLevel(logging.INFO)
     logger.propagate = False
+    handler = logging.StreamHandler()
     formatter = RedactingFormatter(PII_FIELDS)
-    stream = logging.StreamHandler()
-    stream.setFormatter(formatter)
-    logger.addHandler(stream)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     return logger
