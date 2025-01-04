@@ -67,7 +67,7 @@ def get_db() -> MySQLConnection:
 
 
 def main():
-    """ main """
+    """ main ahbibi """
     logger = get_logger()
     conn = get_db()
     cursor = conn.cursor()
