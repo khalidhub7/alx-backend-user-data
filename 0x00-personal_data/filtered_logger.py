@@ -58,8 +58,8 @@ def get_db() -> MySQLConnection:
     from dotenv import load_dotenv
     load_dotenv()
     conn = connect(
-        database=getenv('PERSONAL_DATA_DB_NAME'),
         host=getenv("PERSONAL_DATA_DB_HOST"),
+        database=getenv('PERSONAL_DATA_DB_NAME'),
         user=getenv('PERSONAL_DATA_DB_USERNAME'),
         password=getenv('PERSONAL_DATA_DB_PASSWORD')
     )
