@@ -6,24 +6,16 @@ from typing import List
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
-def filter_datum(
-        fields: List[str], redaction: str,
-        message: str, separator: str) -> str:
-    """ obfuscate specified fields
-in a log message """
-    messageSplit = message.split(separator)[:-1]
-    messageDict = {}
-    for keyvalue in messageSplit:
-        if '=' in keyvalue:
-            key, value = keyvalue.split('=', 1)
-            messageDict[key] = value
-    for field in fields:
-        if field in messageDict:
-
-            message = re.sub(
-                r"{}=[^;]+".format(field),
-                "{}={}".format(field, redaction),
-                message)
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str):
+    """ hide specific fields in a log message """
+    keyvalue = message.split(separator)[:-1]
+    for kv in keyvalue:
+        if '=' in kv:
+            k, v = kv.split('=', 1)
+            if k in fields:
+                message = re.sub(rf'{k}=[^{separator}]+',
+                                 f'{k}={redaction}', message)
     return message
 
 
@@ -60,3 +52,4 @@ def get_logger() -> logging.Logger:
     stream.setFormatter(formatter)
     logger.addHandler(stream)
     return logger
+
