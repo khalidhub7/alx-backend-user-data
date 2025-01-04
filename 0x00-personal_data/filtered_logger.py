@@ -37,6 +37,8 @@ class RedactingFormatter(logging.Formatter):
         """ custom format """
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.msg, self.SEPARATOR)
+        record.msg = "; ".join(
+            [kv.strip() for kv in record.msg.split(";") if kv.strip()]) + ";"
         return super().format(record)
 
 
@@ -75,8 +77,9 @@ def main():
     for row in cursor:
         if len(row) == 8:
             name, email, phone, ssn, password, ip, last_login, user_agent = row
-            message = f"name={name};email={email};phone={phone};ssn={ssn};\
-password={password};ip={ip};last_login={last_login};user_agent={user_agent};"
+            message = f"name={name};email={email};phone={phone};\
+ssn={ssn};password={password};ip={ip};last_login={last_login};\
+user_agent={user_agent};"
             logger.info(message)
     cursor.close()
     conn.close()
