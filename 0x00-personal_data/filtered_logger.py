@@ -1,88 +1,67 @@
 #!/usr/bin/env python3
-""" loggoer """
-from typing import List
-import logging
+""" regex-ing """
 import re
-import os
-import mysql.connector
+import logging
+from os import getenv
+from typing import List
+from mysql.connector import connect, MySQLConnection
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
-PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
-
-
-def filter_datum(
-        fields: List[str],
-        redaction: str,
-        message: str,
-        separator: str) -> str:
-    """ filter_datum """
-    for field in fields:
-        message = re.sub(
-            "{}=.*?{}".format(field, separator),
-            "{}={}{}".format(field, redaction, separator),
-            message)
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
+    """ hide specific fields in a log message """
+    keyvalue = message.split(separator)[:-1]
+    for kv in keyvalue:
+        if '=' in kv:
+            k, v = kv.split('=', 1)
+            if k in fields:
+                message = re.sub(rf'{k}=[^{separator}]+',
+                                 f'{k}={redaction}', message)
     return message
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
-    """
-
+    """ Redacting Formatter class """
     REDACTION = "***"
-    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s \
+%(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields: List[str] = []):
-        """ init """
+    def __init__(self, fields: List[str]):
+        """ initialize """
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """ format """
-        return filter_datum(
-            self.fields, self.REDACTION,
-            super().format(record), self.SEPARATOR)
+        """ custom format """
+        record.msg = filter_datum(self.fields, self.REDACTION,
+                                  record.msg, self.SEPARATOR)
+        return super().format(record)
 
 
 def get_logger() -> logging.Logger:
-    """ get_logger """
+    """ create logger named 'user_data'
+    logger is like a note """
     logger = logging.getLogger('user_data')
     logger.setLevel(logging.INFO)
     logger.propagate = False
-    stream = logging.StreamHandler()
-    stream.setFormatter(RedactingFormatter(PII_FIELDS))
-    logger.addHandler(stream)
+    handler = logging.StreamHandler()
+    formatter = RedactingFormatter(PII_FIELDS)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     return logger
 
 
-def get_db() -> mysql.connector.connection.MySQLConnection:
-    """ get_db """
+def get_db() -> MySQLConnection:
+    """ return connector to db """
     from dotenv import load_dotenv
     load_dotenv()
-    db = mysql.connector.connect(
-        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
-        database=os.getenv('PERSONAL_DATA_DB_NAME'),
-        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''))
-    return db
+    conn = connect(
+        database=getenv('PERSONAL_DATA_DB_NAME'),
+        host=getenv("PERSONAL_DATA_DB_HOST"),
+        user=getenv('PERSONAL_DATA_DB_USERNAME'),
+        password=getenv('PERSONAL_DATA_DB_PASSWORD')
+    )
 
-
-def main():
-    """ main """
-    logger = get_logger()
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM users;")
-    for row in cursor:
-        filtered_row = filter_datum(
-                PII_FIELDS,
-                RedactingFormatter.REDACTION,
-                str(row),
-                RedactingFormatter.SEPARATOR)
-        logger.info(filtered_row)
-    cursor.close()
-    db.close()
-
-
-if __name__ == "__main__":
-    main()
+    return conn
