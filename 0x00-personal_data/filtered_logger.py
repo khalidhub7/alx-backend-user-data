@@ -82,4 +82,5 @@ password={password};ip={ip};last_login={last_login};user_agent={user_agent};"
     conn.close()
 
 
-main()
+if __name__ == "__main__":
+    main()
