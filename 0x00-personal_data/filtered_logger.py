@@ -4,7 +4,6 @@ import re
 import logging
 from os import getenv
 from typing import List
-from dotenv import load_dotenv
 from mysql.connector import connect, MySQLConnection
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
@@ -56,12 +55,13 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> MySQLConnection:
     """ return connector to db """
+    from dotenv import load_dotenv
     load_dotenv()
     conn = connect(
-        host=getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
         database=getenv('PERSONAL_DATA_DB_NAME'),
-        user=getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=getenv('PERSONAL_DATA_DB_PASSWORD', '')
+        host=getenv("PERSONAL_DATA_DB_HOST"),
+        user=getenv('PERSONAL_DATA_DB_USERNAME'),
+        password=getenv('PERSONAL_DATA_DB_PASSWORD')
     )
 
     return conn
