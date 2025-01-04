@@ -7,7 +7,7 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(fields: List[str], redaction: str,
-                 message: str, separator: str):
+                 message: str, separator: str) -> str:
     """ hide specific fields in a log message """
     keyvalue = message.split(separator)[:-1]
     for kv in keyvalue:
@@ -52,4 +52,3 @@ def get_logger() -> logging.Logger:
     stream.setFormatter(formatter)
     logger.addHandler(stream)
     return logger
-
