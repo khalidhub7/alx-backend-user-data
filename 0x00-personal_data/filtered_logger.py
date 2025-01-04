@@ -37,8 +37,6 @@ class RedactingFormatter(logging.Formatter):
         """ custom format """
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.msg, self.SEPARATOR)
-        record.msg = "; ".join(
-            [kv.strip() for kv in record.msg.split(";") if kv.strip()]) + ";"
         return super().format(record)
 
 
