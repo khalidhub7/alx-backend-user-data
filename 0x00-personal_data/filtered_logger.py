@@ -3,6 +3,7 @@
 import re
 import logging
 from typing import List
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(
@@ -10,16 +11,17 @@ def filter_datum(
         message: str, separator: str) -> str:
     """ obfuscate specified fields
 in a log message """
-    msgsplit = message.split(separator)
-    msgdict = {}
-    for i in msgsplit:
-        if i:
-            key, value = i.split('=', 1)
-            msgdict[key] = value
+    messageSplit = message.split(separator)[:-1]
+    messageDict = {}
+    for keyvalue in messageSplit:
+        if '=' in keyvalue:
+            key, value = keyvalue.split('=', 1)
+            messageDict[key] = value
     for field in fields:
-        if field in msgdict:
+        if field in messageDict:
+
             message = re.sub(
-                "{}={}".format(field, msgdict[field]),
+                r"{}=[^;]+".format(field),
                 "{}={}".format(field, redaction),
                 message)
     return message
@@ -35,10 +37,8 @@ class RedactingFormatter(logging.Formatter):
 
     def __init__(self, fields: List[str]):
         """ initialize """
-        super(RedactingFormatter, self
-              ).__init__(self.FORMAT)
+        super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
-
     def format(self, record: logging.LogRecord
                ) -> str:
         """ format the log record """
@@ -48,21 +48,15 @@ class RedactingFormatter(logging.Formatter):
         return super().format(record)
 
 
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
-
-
 def get_logger() -> logging.Logger:
     """
-    create logger named 'user_data' """
-
+    create logger named 'user_data'
+    logger is like a note"""
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
-
     logger.propagate = False
-
     formatter = RedactingFormatter(PII_FIELDS)
     stream = logging.StreamHandler()
     stream.setFormatter(formatter)
     logger.addHandler(stream)
-
     return logger
