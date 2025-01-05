@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
-"""
-function to hash password
-"""
+""" encrypting passwords """
 import bcrypt
-from bcrypt import hashpw
+from typing import ByteString
 
 
-def hash_password(password: str) -> bytes:
-    """
-    Returns a hashed password
-    """
-    b = password.encode()
-    hashed = hashpw(b, bcrypt.gensalt())
-    return hashed
+def hash_password(password: str) -> ByteString:
+    """ encrypting pass """
+    return bcrypt.hashpw(password.encode('utf-8'),
+                         bcrypt.gensalt())
 
 
 def is_valid(hashed_password: bytes, password: str) -> bool:
-    """
-    Check whether a password is valid
-    """
-    return bcrypt.checkpw(password.encode(), hashed_password)
+    """ check valid pass """
+    return bcrypt.checkpw(password.encode('utf-8'),
+                          hashed_password)
