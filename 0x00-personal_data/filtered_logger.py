@@ -67,7 +67,7 @@ def get_db() -> MySQLConnection:
             password=getenv('PERSONAL_DATA_DB_PASSWORD')
         )
     except Error as e:
-        logging.error(f"Database connection failed: {e}")
+        logging.error(f"database connection failed: {e}")
         raise
 
 
