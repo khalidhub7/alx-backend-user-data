@@ -24,20 +24,3 @@ def stats() -> str:
     stats = {}
     stats['users'] = User.count()
     return jsonify(stats)
-
-
-@app_views.route(
-    '/unauthorized', methods=['GET'],
-    strict_slashes=False)
-def unauthorized_page() -> str:
-    """ return unauthorized_page """
-    abort(401)
-
-
-@app_views.route(
-    '/forbidden', methods=['GET'],
-    strict_slashes=False)
-def forbidden() -> str:
-    """user is authenticate but not
-    allowed to access to a resource"""
-    abort(403)
