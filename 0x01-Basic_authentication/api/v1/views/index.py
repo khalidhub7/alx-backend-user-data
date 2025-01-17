@@ -31,4 +31,3 @@ def stats() -> str:
 def unauthorized_page():
     """ unauthorized page """
     abort(401)
-
