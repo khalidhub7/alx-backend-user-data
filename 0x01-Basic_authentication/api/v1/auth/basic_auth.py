@@ -3,6 +3,7 @@
 from api.v1.auth.auth import Auth
 import base64
 from typing import Tuple
+from models.user import User
 
 
 class BasicAuth(Auth):
@@ -44,3 +45,15 @@ class BasicAuth(Auth):
             if ':' in auth_h:
                 return tuple(auth_h.split(':'))
         return (None, None)
+
+    def user_object_from_credentials(
+            self, user_email: str, user_pwd: str) -> User:
+        """ finds and returns the user object \
+            based on the provided credentials """
+        if isinstance(user_email, str) and \
+                isinstance(user_pwd, str):
+            users = User.search({'email': user_email})
+            for user in users:
+                if user and user.is_valid_password(user_pwd):
+                    return user
+        return None
