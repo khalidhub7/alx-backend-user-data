@@ -4,6 +4,7 @@ from api.v1.auth.auth import Auth
 import base64
 from typing import Tuple
 from models.user import User
+from models.base import DATA
 
 
 class BasicAuth(Auth):
@@ -52,8 +53,8 @@ class BasicAuth(Auth):
             based on the provided credentials """
         if isinstance(user_email, str) and \
                 isinstance(user_pwd, str):
-            users = User.search({'email': user_email})
-            if len(users) != 0:
+            if 'User' in DATA:
+                users = User.search({'email': user_email})
                 for user in users:
                     if user and user.is_valid_password(user_pwd):
                         return user
