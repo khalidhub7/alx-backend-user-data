@@ -21,7 +21,7 @@ class Auth:
                 p = expath.split('/')[-1].rstrip('*')  # like 'stat'
                 last_part = [i for i in path.split(
                     '/') if i][-1]  # like 'status'
-                if p in last_part:
+                if last_part.startswith(p):
                     return False
         return True
 
