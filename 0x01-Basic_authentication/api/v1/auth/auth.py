@@ -16,14 +16,13 @@ class Auth:
                      List[str]) -> bool:
         """ check if path in excluded_paths ,excluded_paths is
             a list of paths that do not require authentication """
-        if path and excluded_paths:
-            if len(path) != 0 and len(excluded_paths) != 0:
-                for expath in excluded_paths:
-                    p = expath.split('/')[-1].rstrip('*')  # like 'stat'
-                    last_part = [i for i in path.split(
-                        '/') if i][-1]  # like 'status'
-                    if p in last_part:
-                        return False
+        if len(path) != 0 and len(excluded_paths) != 0:
+            for expath in excluded_paths:
+                p = expath.split('/')[-1].rstrip('*')  # like 'stat'
+                last_part = [i for i in path.split(
+                    '/') if i][-1]  # like 'status'
+                if p in last_part:
+                    return False
         return True
 
     def authorization_header(self, request=None
