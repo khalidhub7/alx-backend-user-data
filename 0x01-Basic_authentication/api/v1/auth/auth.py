@@ -17,9 +17,14 @@ class Auth:
         """ require auth """
         if path and excluded_paths:
             if len(path) != 0 and len(excluded_paths) != 0:
-                if path in excluded_paths \
-                        or path + '/' in excluded_paths:
-                    return False
+                for expath in excluded_paths:
+                    if '*' in expath:
+                        p = expath.split('/')[-1].rstrip('*')
+                        if path.endswith(p) and path.endswith(p + '/'):
+                            return False
+                    if path == expath \
+                            or path + '/' == expath:
+                        return False
         return True
 
     def authorization_header(self, request=None
