@@ -20,7 +20,7 @@ class Auth:
                 for expath in excluded_paths:
                     if '*' in expath:
                         p = expath.split('/')[-1].rstrip('*')
-                        if path.endswith(p) and path.endswith(p + '/'):
+                        if path.endswith(p) or path.endswith(p + '/'):
                             return False
                     if path == expath \
                             or path + '/' == expath:
