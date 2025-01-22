@@ -14,8 +14,8 @@ class Auth:
 
     def require_auth(self, path: str, excluded_paths:
                      List[str]) -> bool:
-        """ check if path in excluded_paths ,excluded_paths is
-            a list of paths that do not require authentication """
+        """ check if path in excluded_paths
+        excluded_paths: paths that not require auth """
         if len(path) != 0 and len(excluded_paths) != 0:
             for expath in excluded_paths:
                 p = expath.split('/')[-1].rstrip('*')  # like 'stat'
