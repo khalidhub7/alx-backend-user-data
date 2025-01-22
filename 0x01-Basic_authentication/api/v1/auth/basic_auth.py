@@ -59,3 +59,19 @@ class BasicAuth(Auth):
                     if user and user.is_valid_password(user_pwd):
                         return user
         return None
+
+    def current_user(
+            self, request=None) -> User:
+        """ return the current user based \
+            on the Authorization header """
+        try:
+            user_obj_from_credentials = \
+                self.user_object_from_credentials(
+                    *self.extract_user_credentials(
+                        self.decode_base64_authorization_header(
+                            self.extract_base64_authorization_header(
+                                self.authorization_header(request)
+                            ))))
+            return user_obj_from_credentials
+        except Exception:
+            return None
