@@ -44,7 +44,7 @@ class BasicAuth(Auth):
         auth_h = decoded_base64_authorization_header
         if isinstance(auth_h, str):
             if ':' in auth_h:
-                return tuple(auth_h.split(':'))
+                return tuple(auth_h.split(':', 1))
         return (None, None)
 
     def user_object_from_credentials(
