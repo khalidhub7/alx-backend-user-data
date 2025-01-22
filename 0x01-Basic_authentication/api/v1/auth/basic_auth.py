@@ -70,7 +70,8 @@ class BasicAuth(Auth):
                     *self.extract_user_credentials(
                         self.decode_base64_authorization_header(
                             self.extract_base64_authorization_header(
-                                self.authorization_header(request)
+                                self.authorization_header(
+                                    request)
                             ))))
             return user_obj_from_credentials
         except Exception:
