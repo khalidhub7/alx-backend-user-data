@@ -52,9 +52,16 @@ def befoore_request():
     exclude_auth = ['/api/v1/status/',
                     '/api/v1/unauthorized/',
                     '/api/v1/forbidden/']
-    req_auth = auth.require_auth(
-        request.path, exclude_auth)
-    auth_header = auth.authorization_header(request)
+    try:
+        req_auth = auth.require_auth(
+            request.path, exclude_auth)
+    except Exception:
+        req_auth = False
+
+    try:
+        auth_header = auth.authorization_header(request)
+    except Exception:
+        auth_header = None
 
     if auth and req_auth:
         if not auth_header:
@@ -62,7 +69,8 @@ def befoore_request():
         current_user = auth.current_user(request)
         if not current_user:
             abort(403)
-        request.current_user = current_user
+        if current_user:
+            request.current_user = current_user
 
 
 if __name__ == "__main__":
