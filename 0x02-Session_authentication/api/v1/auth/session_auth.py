@@ -26,7 +26,7 @@ class SessionAuth(Auth):
             self, session_id: str = None) -> str:
         """ return User id based on a session id """
         if isinstance(session_id, str):
-            for i in reversed(self.user_id_by_session_id):
+            for i in self.user_id_by_session_id:
                 if i == session_id:
                     return self.user_id_by_session_id.get(session_id)
         return None
