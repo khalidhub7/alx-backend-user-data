@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """ auth module """
-from typing import List, TypeVar
-from flask import (request)
+from typing import List
 from models.user import User
+from os import getenv
 
 
 class Auth:
     """ auth class """
 
     def __init__(self):
-        """ no any obj """
         pass
 
     def require_auth(self, path: str, excluded_paths:
@@ -39,4 +38,12 @@ class Auth:
 
     def current_user(self, request=None
                      ) -> User:
-        """ current user """
+        """ return current user """
+
+    def session_cookie(self, request=None):
+        """ return cookie value from a request """
+        try:
+            return request.cookies.get(
+                getenv('SESSION_NAME'))
+        except Exception:
+            return None
