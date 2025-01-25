@@ -10,17 +10,18 @@ import os
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-auth = None
 
-auth_method = (os.getenv('AUTH_TYPE'), None)
-if auth_method:
-    if auth_method == 'auth':
+
+auth = None
+auth_type = os.getenv('AUTH_TYPE')
+if auth_type:
+    if auth_type == 'auth':
         from api.v1.auth.auth import Auth
         auth = Auth()
-    if auth_method == 'basic_auth':
+    elif auth_type == 'basic_auth':
         from api.v1.auth.basic_auth import BasicAuth
         auth = BasicAuth()
-    if auth_method == 'session_auth':
+    elif auth_type == 'session_auth':
         from api.v1.auth.session_auth import SessionAuth
         auth = SessionAuth()
 
@@ -52,17 +53,9 @@ def befoore_request():
     exclude_auth = ['/api/v1/status/',
                     '/api/v1/unauthorized/',
                     '/api/v1/forbidden/']
-    try:
-        req_auth = auth.require_auth(
-            request.path, exclude_auth)
-    except Exception:
-        req_auth = False
-
-    try:
-        auth_header = auth.authorization_header(request)
-    except Exception:
-        auth_header = None
-
+    req_auth = auth.require_auth(
+        request.path, exclude_auth)
+    auth_header = auth.authorization_header(request)
     if auth and req_auth:
         if not auth_header:
             abort(401)
