@@ -50,20 +50,23 @@ def forbidden_page(err):
 @app.before_request
 def befoore_request():
     """ before request method """
-    exclude_auth = ['/api/v1/status/',
-                    '/api/v1/unauthorized/',
-                    '/api/v1/forbidden/']
-    req_auth = auth.require_auth(
-        request.path, exclude_auth)
-    auth_header = auth.authorization_header(request)
+    exclude_auth = ['/api/v1/status/', '/api/v1/unauthorized/',
+                    '/api/v1/forbidden/', '/api/v1/auth_session/login/']
+    req_auth = auth.require_auth(request.path, exclude_auth)
+
     if auth and req_auth:
-        if not auth_header:
+        auth_header = auth.authorization_header(request)
+        sess_auth = auth.session_cookie(request)
+        if not auth_header and not sess_auth:
             abort(401)
-        current_user = auth.current_user(request)
-        if not current_user:
-            abort(403)
-        if current_user:
-            request.current_user = current_user
+        else:
+            user = auth.current_user(request)
+            if user:
+                request.current_user = user
+            else:
+                abort(403)
+    else:
+        pass
 
 
 if __name__ == "__main__":
