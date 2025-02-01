@@ -37,7 +37,7 @@ return 'user_id' based on session_id, session_dict """
                 # with expiration
                 created_at = session_dict.get('created_at')
                 expiration_date = created_at + timedelta(
-                    seconds=self.session_duration) # enta tssali session
+                    seconds=self.session_duration)  # enta tssali session
                 if datetime.now() > expiration_date:
                     raise Exception("session expired")
                 return user_id
