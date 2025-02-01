@@ -30,8 +30,7 @@ class SessionExpAuth(SessionAuth):
         created_at = session_dict.get('created_at')
         user_id = session_dict.get('user_id')
 
-        if session_dict and created_at \
-                and user_id and session_id:
+        if session_id:
             if self.session_duration <= 0:
                 return user_id
             expiration_date = created_at + timedelta(
