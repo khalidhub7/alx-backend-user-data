@@ -13,18 +13,16 @@ class SessionExpAuth(SessionAuth):
         super()
         self.session_duration = int(getenv('SESSION_DURATION', '0'))
 
-    def create_session(self, user_id: str = None) -> str:
-        """Create session method
-        """
+    def create_session(self, user_id=None):
+        """ create session with expiration tracking """
         session_id = super().create_session(user_id)
-        if session_id is None:
-            return None
-        session_dictionary = {
-            "user_id": user_id,
-            "created_at": datetime.now()
-        }
-        self.user_id_by_session_id[session_id] = session_dictionary
-        return session_id
+        if session_id:
+            self.user_id_by_session_id[session_id] = {
+                'user_id': user_id,
+                'created_at': datetime.now()
+            }
+            return session_id
+        return None
 
     def user_id_for_session_id(self, session_id=None):
         """ return 'session dict' based on a session id """
@@ -32,7 +30,8 @@ class SessionExpAuth(SessionAuth):
         created_at = session_dict.get('created_at')
         user_id = session_dict.get('user_id')
 
-        if session_dict and created_at and user_id:
+        if session_dict and created_at \
+                and user_id and session_id:
             if self.session_duration <= 0:
                 return user_id
             expiration_date = created_at + timedelta(
