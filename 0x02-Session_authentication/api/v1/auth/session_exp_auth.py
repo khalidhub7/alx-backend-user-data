@@ -11,8 +11,7 @@ class SessionExpAuth(SessionAuth):
     def __init__(self):
         """ initialize sess duration """
         super()
-        self.session_duration = int(
-            getenv('SESSION_DURATION'), 0)
+        self.session_duration = int(getenv('SESSION_DURATION', '0'))
 
     def create_session(self, user_id=None):
         """ create session with expiration tracking """
