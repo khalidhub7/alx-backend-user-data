@@ -26,17 +26,19 @@ class SessionExpAuth(SessionAuth):
 
     def user_id_for_session_id(self, session_id=None):
         """ return 'session dict' based on a session id """
+        if not session_id:
+             return None
+        # no expiration
+        if self.session_duration <= 0:
+                return user_id
+
+        # with expiration
         session_dict = self.user_id_by_session_id.get(session_id)
         created_at = session_dict.get('created_at')
         user_id = session_dict.get('user_id')
+        expiration_date = created_at + timedelta(
+             seconds=self.session_duration)
 
-        if session_id:
-            if self.session_duration <= 0:
-                return user_id
-            expiration_date = created_at + timedelta(
-                seconds=self.session_duration)
-
-            if datetime.now() > expiration_date:
-                return None
-            return user_id
-        return None
+        if datetime.now() > expiration_date:
+            return None
+        return user_id
