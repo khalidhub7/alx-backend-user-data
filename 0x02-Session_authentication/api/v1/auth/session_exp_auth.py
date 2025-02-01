@@ -25,7 +25,8 @@ class SessionExpAuth(SessionAuth):
         return None
 
     def user_id_for_session_id(self, session_id=None):
-        """ return 'session dict' based on a session id """
+        """
+return 'user_id' based on session_id, session_dict """
         try:
             if session_id:
                 session_dict = self.user_id_by_session_id.get(session_id)
@@ -36,7 +37,7 @@ class SessionExpAuth(SessionAuth):
                 # with expiration
                 created_at = session_dict.get('created_at')
                 expiration_date = created_at + timedelta(
-                    seconds=self.session_duration)
+                    seconds=self.session_duration) # enta tssali session
                 if datetime.now() > expiration_date:
                     raise Exception("session expired")
                 return user_id
