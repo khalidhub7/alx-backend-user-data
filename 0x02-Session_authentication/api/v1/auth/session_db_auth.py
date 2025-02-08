@@ -23,7 +23,8 @@ class SessionDBAuth(SessionExpAuth):
             # check is the session not yet expired
             check_session = super().user_id_for_session_id(session_id)
             if check_session:
-                user_session = UserSession.search({'user_id': check_session})
+                user_session = UserSession.search({'user_id': check_session,
+                                                  'session_id': session_id})
                 if len(user_session) != 0:
                     return user_session[0].user_id
         return None
@@ -31,11 +32,14 @@ class SessionDBAuth(SessionExpAuth):
     def destroy_session(self, request=None):
         """ delete user session (in database) / logout """
         try:
+            # it means 'not implemented'—neither true nor false
+            if not super().destroy_session(request):
+                return None
             session_id = self.session_cookie(request)
             user_session = UserSession.search({'session_id': session_id})
             if len(user_session) != 0:
                 del user_session[0]
                 return True
-            return False
+            raise Exception('session not found')
         except Exception:
             return False
