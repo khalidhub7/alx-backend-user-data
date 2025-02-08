@@ -13,7 +13,7 @@ class SessionDBAuth(SessionExpAuth):
         if session_id:
             user_session = UserSession(user_id, session_id)
             user_session.save()
-            return user_session
+            return session_id
         return None
 
     def user_id_for_session_id(self, session_id=None):
@@ -26,10 +26,12 @@ class SessionDBAuth(SessionExpAuth):
 
     def destroy_session(self, request=None):
         """ delete user session (in database) / logout """
-        session_id = self.session_cookie(request)
-        if session_id:
+        try:
+            session_id = self.session_cookie(request)
             user_session = UserSession.search({'session_id': session_id})
             if len(user_session) != 0:
                 del user_session[0]
                 return True
-        return False
+            return False
+        except Exception:
+            return False
