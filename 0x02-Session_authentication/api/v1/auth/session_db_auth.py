@@ -23,8 +23,8 @@ class SessionDBAuth(SessionExpAuth):
             # check is the session not yet expired
             check_session = super().user_id_for_session_id(session_id)
             if check_session:
-                user_session = UserSession.search({'user_id': check_session,
-                                                  'session_id': session_id})
+                user_session = UserSession.search(
+                    {'session_id': session_id})
                 if len(user_session) != 0:
                     return user_session[0].user_id
         return None
