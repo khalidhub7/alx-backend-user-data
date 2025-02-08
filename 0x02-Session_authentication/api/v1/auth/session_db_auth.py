@@ -10,7 +10,7 @@ class SessionDBAuth(SessionExpAuth):
     def create_session(self, user_id=None):
         """ create session but now stored in db not memory """
         session_id = super().create_session(user_id)
-        if session_id:
+        if session_id and user_id:
             user_session = UserSession(user_id, session_id)
             user_session.save()
             return session_id
