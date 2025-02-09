@@ -18,15 +18,12 @@ class SessionDBAuth(SessionExpAuth):
         return None
 
     def user_id_for_session_id(self, session_id=None):
-        """ user_id for given session_id """
-        if not session_id:
+        """User id for session id method
+        """
+        if session_id is None:
             return None
-
-        # Check if session is expired using parent class
-        user_id = super().user_id_for_session_id(session_id)
-        if not user_id:
-            return None  # Session expired or invalid
-        # Query the database for the session
+        if super().user_id_for_session_id(session_id) is None:
+            return None
         user_session = UserSession.search({'session_id': session_id})
         if user_session:
             return user_session[0].user_id
