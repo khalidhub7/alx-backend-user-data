@@ -17,17 +17,41 @@ class SessionDBAuth(SessionExpAuth):
             return session_id
         return None
 
+    '''def user_id_for_session_id(self, session_id=None):
+        """ user_id for given session_id """
+        if session_id:
+            # check is the session not yet expired
+            user_id = super().user_id_for_session_id(session_id)
+            if user_id:
+                user_session = UserSession.search(
+                    {'session_id': session_id})
+                if len(user_session) != 0:
+                    return user_session[0].user_id
+        return None'''
+
     def user_id_for_session_id(self, session_id=None):
-        """User id for session id method
-        """
+        """Retrieves the user ID associated with a session ID from the database, considering expiration."""
         if session_id is None:
             return None
-        if super().user_id_for_session_id(session_id) is None:
+    # Query the database for the UserSession
+        user_sessions = UserSession.search({'session_id': session_id})
+        if not user_sessions:
             return None
-        user_session = UserSession.search({'session_id': session_id})
-        if user_session:
-            return user_session[0].user_id
-        return None
+        user_session = user_sessions[0]
+    # Check session expiration
+        if self.session_duration <= 0:
+            return user_session.user_id
+    # Ensure created_at exists
+        created_at = getattr(user_session, 'created_at', None)
+        if created_at is None:
+            return None
+    # Calculate expiration time
+        from datetime import datetime, timedelta
+        expire_time = created_at + timedelta(seconds=self.session_duration)
+        if datetime.now() > expire_time:
+            self.destroy_session_by_session_id(session_id)
+            return None
+        return user_session.user_id
 
     def destroy_session(self, request=None):
         """ delete user session (in database) / logout """
