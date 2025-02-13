@@ -17,7 +17,7 @@ class SessionDBAuth(SessionExpAuth):
             return session_id
         return None
 
-    def user_id_for_session_id(self, session_id=None):
+    '''def user_id_for_session_id(self, session_id=None):
         """ user_id for given session_id """
         if session_id:
             # check is the session not yet expired
@@ -25,9 +25,20 @@ class SessionDBAuth(SessionExpAuth):
             if user_id:
                 user_session = UserSession.search(
                     {'session_id': session_id})
-                if user_session != "[]":
+                if len(user_session) != 0:
                     return user_session[0].user_id
-        return None
+        return None'''
+
+    def user_id_for_session_id(self, session_id=None):
+        """Return user_id if session exists and is valid."""
+        if not session_id:
+            return None
+
+        user_session = UserSession.search({'session_id': session_id})
+        if not user_session:
+            return None  # Ensure the session exists
+
+        return user_session[0].user_id  # Return the correct user_id
 
     def destroy_session(self, request=None):
         """ delete user session (in database) / logout """
@@ -37,7 +48,7 @@ class SessionDBAuth(SessionExpAuth):
                 return None
             session_id = self.session_cookie(request)
             user_session = UserSession.search({'session_id': session_id})
-            if user_session != "[]":
+            if len(user_session) != 0:
                 del user_session[0]
                 return True
             raise Exception('session not found')
