@@ -3,6 +3,7 @@
 from os import getenv
 from datetime import datetime, timedelta
 from api.v1.auth.session_auth import SessionAuth
+from models.base import DATA
 
 
 class SessionExpAuth(SessionAuth):
@@ -15,6 +16,13 @@ class SessionExpAuth(SessionAuth):
 
     def create_session(self, user_id=None):
         """ create session with expiration tracking """
+        # ensure a unique session_id for each user_id
+        class_data = DATA[self.__class__.__name__]
+        for sess_id in class_data:
+            if class_data[sess_id] == user_id:
+                del class_data[sess_id]
+
+        # now generate a session_id with exp info
         session_id = super().create_session(user_id)
         if session_id:
             self.user_id_by_session_id[session_id] = {
@@ -31,16 +39,18 @@ return 'user_id' based on session_id, session_dict """
             if session_id:
                 session_dict = self.user_id_by_session_id.get(session_id)
                 user_id = session_dict.get('user_id')
-                # no expiration
-                if self.session_duration <= 0:
+                if session_dict and user_id:
+                    # no expiration permanent session
+                    if self.session_duration <= 0:
+                        return user_id
+
+                    # with expiration
+                    created_at = session_dict.get('created_at')
+                    expiration_date = created_at + timedelta(
+                        seconds=self.session_duration)  # enta tssali session
+                    if datetime.now() > expiration_date:
+                        raise Exception("session expired")
                     return user_id
-                # with expiration
-                created_at = session_dict.get('created_at')
-                expiration_date = created_at + timedelta(
-                    seconds=self.session_duration)  # enta tssali session
-                if datetime.now() > expiration_date:
-                    raise Exception("session expired")
-                return user_id
             raise Exception('no session_id')
         except Exception:
             return None
