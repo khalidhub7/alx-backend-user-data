@@ -31,7 +31,7 @@ class SessionDBAuth(SessionExpAuth):
 
     def user_id_for_session_id(self, session_id=None):
         """Return user_id if session exists and is valid."""
-        if not session_id or session_id not in self.user_id_by_session_id:
+        if not session_id:
             return None
 
         user_session = UserSession.search({'session_id': session_id})
@@ -53,4 +53,4 @@ class SessionDBAuth(SessionExpAuth):
                 return True
             raise Exception('session not found')
         except Exception:
-            return False²
+            return False
