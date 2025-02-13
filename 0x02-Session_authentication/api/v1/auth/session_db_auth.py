@@ -25,7 +25,7 @@ class SessionDBAuth(SessionExpAuth):
             if user_id:
                 user_session = UserSession.search(
                     {'session_id': session_id})
-                if len(user_session) != 0:
+                if user_session != "[]":
                     return user_session[0].user_id
         return None
 
@@ -37,7 +37,7 @@ class SessionDBAuth(SessionExpAuth):
                 return None
             session_id = self.session_cookie(request)
             user_session = UserSession.search({'session_id': session_id})
-            if len(user_session) != 0:
+            if user_session != "[]":
                 del user_session[0]
                 return True
             raise Exception('session not found')
