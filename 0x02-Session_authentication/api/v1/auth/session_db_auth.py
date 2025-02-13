@@ -53,7 +53,7 @@ class SessionDBAuth(SessionExpAuth):
             return None
         return user_session.user_id
 
-    def destroy_session(self, request=None):
+    '''def destroy_session(self, request=None):
         """ delete user session (in database) / logout """
         try:
             # it means 'not implemented'—neither true nor false
@@ -66,4 +66,14 @@ class SessionDBAuth(SessionExpAuth):
                 return True
             raise Exception('session not found')
         except Exception:
-            return False
+            return False'''
+
+    def destroy_session_by_session_id(self, session_id):
+        """Deletes the UserSession instance for the given session_id."""
+        user_sessions = UserSession.search({'session_id': session_id})
+        if user_sessions:
+            user_session = user_sessions[0]
+            user_session.remove()
+            user_session.save()
+            return True
+        return False
