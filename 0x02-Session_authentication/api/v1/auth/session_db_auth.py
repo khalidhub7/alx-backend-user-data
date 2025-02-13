@@ -2,10 +2,9 @@
 """ session database auth module """
 from api.v1.auth.session_exp_auth import SessionExpAuth
 from models.user_session import UserSession
-from datetime import datetime, timedelta
 
 
-'''class SessionDBAuth(SessionExpAuth):
+class SessionDBAuth(SessionExpAuth):
     """ database: file """
 
     def create_session(self, user_id=None):
@@ -43,67 +42,4 @@ from datetime import datetime, timedelta
                 return True
             raise Exception('session not found')
         except Exception:
-            return False'''
-
-
-class SessionDBAuth(SessionExpAuth):
-    """Session authentication with database storage."""
-
-    def create_session(self, user_id=None):
-        """Creates a session and stores it in the database."""
-        session_id = super().create_session(user_id)
-        if session_id and user_id:
-            user_session = UserSession(user_id=user_id, session_id=session_id)
-            user_session.save()
-            return session_id
-        return None
-
-    def user_id_for_session_id(self, session_id=None):
-        """Retrieves the user ID associated with a session ID from the database, considering expiration."""
-        if session_id is None:
-            return None
-
-        # Query the database for the UserSession
-        user_sessions = UserSession.search({'session_id': session_id})
-        if not user_sessions:
-            return None
-
-        user_session = user_sessions[0]
-
-        # Check session expiration
-        if self.session_duration <= 0:
-            return user_session.user_id
-
-        # Ensure created_at exists
-        created_at = getattr(user_session, 'created_at', None)
-        if created_at is None:
-            return None
-
-        # Calculate expiration time
-        expire_time = created_at + timedelta(seconds=self.session_duration)
-        if datetime.now() > expire_time:
-            self.destroy_session_by_session_id(session_id)
-            return None
-
-        return user_session.user_id
-
-    def destroy_session_by_session_id(self, session_id):
-        """Deletes the UserSession instance for the given session_id."""
-        user_sessions = UserSession.search({'session_id': session_id})
-        if user_sessions:
-            user_session = user_sessions[0]
-            user_session.delete()
-            user_session.save()
-            return True
-        return False
-
-    def destroy_session(self, request=None):
-        """Deletes the user session from the database."""
-        if request is None:
             return False
-
-        session_id = self.session_cookie(request)
-        if session_id is None:
-            return False
-
-        return self.destroy_session_by_session_id(session_id)
