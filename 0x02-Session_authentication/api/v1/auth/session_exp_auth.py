@@ -24,21 +24,43 @@ class SessionExpAuth(SessionAuth):
             return session_id
         return None
 
-    def user_id_for_session_id(
-            self,
-            session_id: str = None) -> str:
-        """User id for session id method
+    '''def user_id_for_session_id(self, session_id=None):
         """
-        if session_id is None or type(session_id) is not str:
+return 'user_id' based on session_id, session_dict """
+        try:
+            if session_id:
+                session_dict = self.user_id_by_session_id.get(session_id)
+                user_id = session_dict.get('user_id')
+                # no expiration
+                if self.session_duration <= 0:
+                    return user_id
+                # with expiration
+                created_at = session_dict.get('created_at')
+                expiration_date = created_at + timedelta(
+                    seconds=self.session_duration)  # enta tssali session
+                if datetime.now() > expiration_date:
+                    raise Exception("session expired")
+                return user_id
+            raise Exception('no session_id')
+        except Exception:
+            return None'''
+
+    def user_id_for_session_id(self, session_id=None):
+        """Return 'user_id' based on session_id, handling expiration."""
+        if not session_id:
             return None
-        session_dictionary = self.user_id_by_session_id.get(session_id)
-        if session_dictionary is None:
+
+        session_dict = self.user_id_by_session_id.get(session_id)
+        if not session_dict:
             return None
+
+        user_id = session_dict.get('user_id')
         if self.session_duration <= 0:
-            return session_dictionary.get("user_id")
-        if "created_at" not in session_dictionary:
+            return user_id
+
+        created_at = session_dict.get('created_at')
+        if not created_at or datetime.now() > created_at + \
+                timedelta(seconds=self.session_duration):
             return None
-        if (datetime.now() - session_dictionary.get("created_at")
-                > timedelta(seconds=self.session_duration)):
-            return None
-        return session_dictionary.get("user_id")
+
+        return user_id
