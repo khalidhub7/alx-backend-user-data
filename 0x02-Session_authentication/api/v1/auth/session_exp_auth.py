@@ -26,21 +26,25 @@ class SessionExpAuth(SessionAuth):
             return session_id
         return None
 
-    def user_id_for_session_id(
-            self,
-            session_id: str = None) -> str:
-        """User id for session id method
-        """
-        if session_id is None or type(session_id) is not str:
+    def user_id_for_session_id(self, session_id=None):
+        """user id for session id"""
+        if session_id is None:
             return None
-        session_dictionary = self.user_id_by_session_id.get(session_id)
-        if session_dictionary is None:
-            return None
+        if session_id not in self.user_id_by_session_id:
+            if hasattr(self, "db_user"):
+                diction = {}
+                diction['user_id'] = self.db_user.id
+                diction['created_at'] = self.db_user.created_at
+                self.user_id_by_session_id[session_id] = diction
+            else:
+                return None
         if self.session_duration <= 0:
-            return session_dictionary.get("user_id")
-        if "created_at" not in session_dictionary:
+            return self.user_id_by_session_id[session_id]["user_id"]
+        if "created_at" not in self.user_id_by_session_id[session_id]:
             return None
-        if (datetime.now() - session_dictionary.get("created_at")
-                > timedelta(seconds=self.session_duration)):
+        time_change = timedelta(seconds=self.session_duration)
+        new_time = self.user_id_by_session_id[session_id]["\
+created_at"] + time_change
+        if new_time <= datetime.now():
             return None
-        return session_dictionary.get("user_id")
+        return self.user_id_by_session_id[session_id]["user_id"]

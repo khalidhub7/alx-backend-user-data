@@ -19,16 +19,27 @@ class SessionDBAuth(SessionExpAuth):
         return None
 
     def user_id_for_session_id(self, session_id=None):
-        """User id for session id method
+        """
+        user_id for session
         """
         if session_id is None:
             return None
+        try:
+            user_session = UserSession.search({"session_id": session_id})
+        except Exception:
+            return None
+        if user_session is None or user_session == []:
+            return None
+
+        self.db_user = user_session[0]
         if super().user_id_for_session_id(session_id) is None:
             return None
-        user_session = UserSession.search({'session_id': session_id})
-        if user_session:
-            return user_session[0].user_id
-        return None
+        # UserSession.load_from_file()
+        # user_session = UserSession.search({"session_id": session_id})
+        # if user_session is None or user_session == []:
+        #     return None
+
+        return user_session[0].user_id
 
     def destroy_session(self, request=None):
         """ delete user session (in database) / logout """
