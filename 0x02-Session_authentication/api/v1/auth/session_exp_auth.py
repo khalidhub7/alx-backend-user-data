@@ -16,12 +16,6 @@ class SessionExpAuth(SessionAuth):
 
     def create_session(self, user_id=None):
         """ create session with expiration tracking """
-        # ensure a unique session_id for each user_id
-        class_data = DATA[self.__class__.__name__]
-        for sess_id in class_data:
-            if class_data[sess_id] == user_id:
-                del class_data[sess_id]
-
         # now generate a session_id with exp info
         session_id = super().create_session(user_id)
         if session_id:
