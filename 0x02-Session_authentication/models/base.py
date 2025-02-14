@@ -38,7 +38,7 @@ class Base():
     def __eq__(self, other: TypeVar('Base')) -> bool:
         """ Equality
         """
-        if type(self) != type(other):
+        if not isinstance(self, type(other)):
             return False
         if not isinstance(self, Base):
             return False
@@ -51,7 +51,7 @@ class Base():
         for key, value in self.__dict__.items():
             if not for_serialization and key[0] == '_':
                 continue
-            if type(value) is datetime:
+            if isinstance(value, datetime):
                 result[key] = value.strftime(TIMESTAMP_FORMAT)
             else:
                 result[key] = value
@@ -64,13 +64,12 @@ class Base():
         s_class = cls.__name__
         file_path = ".db_{}.json".format(s_class)
         DATA[s_class] = {}
-        if not path.exists(file_path):
-            return
 
-        with open(file_path, 'r') as f:
-            objs_json = json.load(f)
-            for obj_id, obj_json in objs_json.items():
-                DATA[s_class][obj_id] = cls(**obj_json)
+        if path.exists(file_path) and path.getsize(file_path) > 0:
+            with open(file_path, 'r') as f:
+                objs_json = json.load(f)
+                for obj_id, obj_json in objs_json.items():
+                    DATA[s_class][obj_id] = cls(**obj_json)
 
     @classmethod
     def save_to_file(cls):
@@ -126,6 +125,7 @@ class Base():
         """ Search all objects with matching attributes
         """
         s_class = cls.__name__
+
         def _search(obj):
             if len(attributes) == 0:
                 return True
@@ -133,5 +133,5 @@ class Base():
                 if (getattr(obj, k) != v):
                     return False
             return True
-        
+
         return list(filter(_search, DATA[s_class].values()))
