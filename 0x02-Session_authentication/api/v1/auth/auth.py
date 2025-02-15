@@ -8,10 +8,6 @@ from models.user import User
 class Auth:
     """ auth class """
 
-    def __init__(self):
-        """ no any obj """
-        pass
-
     def require_auth(self, path: str, excluded_paths:
                      List[str]) -> bool:
         """ check if path in excluded_paths
@@ -28,13 +24,21 @@ class Auth:
                     return False
         return True
 
-    def authorization_header(self, request=None
-                             ) -> str:
+    def authorization_header(
+            self, request=None) -> str:
         """ authorization header """
         if request:
             return request.headers.get('Authorization')
         return None
 
-    def current_user(self, request=None
-                     ) -> User:
+    def current_user(
+            self, request=None) -> User:
         """ current user """
+
+    def session_cookie(self, request=None):
+        """ retrieve a session id from  """
+        if request:
+            from os import getenv
+            cookie_key = getenv('SESSION_NAME')
+            return request.cookies.get(str(cookie_key))
+        return None
