@@ -12,7 +12,7 @@ class SessionDBAuth(SessionExpAuth):
         session_id = super().create_session(user_id)
         if session_id:
             user_session = UserSession(
-                user_id=user_id, session_id=user_session)
+                user_id=user_id, session_id=session_id)
             user_session.save()
             return session_id
         return None
@@ -26,8 +26,7 @@ class SessionDBAuth(SessionExpAuth):
                 {'session_id': session_id})
             if len(sessions) != 0:
                 from datetime import timedelta, datetime
-                created_at = datetime.strptime(
-                    sessions[0].created_at, "%Y-%m-%dT%H:%M:%S")
+                created_at = sessions[0].created_at
                 expiration_date = created_at + timedelta(
                     seconds=self.session_duration)
                 if self.session_duration <= 0:
