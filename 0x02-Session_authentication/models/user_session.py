@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" store Session IDs in db (file) """
+""" store Session_id in database (file) """
 from models.base import Base
 
 
