@@ -21,10 +21,19 @@ class SessionDBAuth(SessionExpAuth):
         """ overload user_id_for_session_id """
         if session_id:
             UserSession.load_from_file()
-            user_id = UserSession.search(
-                {'session_id': session_id})[0].id
-            if user_id:
-                return user_id
+
+            sessions = UserSession.search(
+                {'session_id': session_id})
+            if len(sessions) != 0:
+                from datetime import timedelta, datetime
+                created_at = datetime.strptime(
+                    sessions[0].created_at, "%Y-%m-%dT%H:%M:%S")
+                expiration_date = created_at + timedelta(
+                    seconds=self.session_duration)
+                if self.session_duration <= 0:
+                    return sessions[0].id
+                if expiration_date > datetime.now():
+                    return sessions[0].id
         return None
 
     def destroy_session(self, request=None):
