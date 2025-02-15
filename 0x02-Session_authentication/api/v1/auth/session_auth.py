@@ -28,14 +28,9 @@ class SessionAuth(Auth):
         if request:
             session_id = self.session_cookie(request)
             if session_id:
-                data = self.user_id_by_session_id.get(session_id)
-                user_id = None
-                if isinstance(data, dict):
-                    # mean session_exp_auth that call current_user
-                    user_id = data.get('user_id')
-                elif isinstance(data, str):
-                    # mean session_auth that call current_user
-                    user_id = data
+                # here it use appropriate (user_id_for_session_id) func
+                # (user_id_for_session_id) that control expiration
+                user_id = self.user_id_for_session_id(session_id)
                 if user_id:
                     from models.user import User
                     user = User.get(user_id)
