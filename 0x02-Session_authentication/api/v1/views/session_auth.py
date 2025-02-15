@@ -32,3 +32,15 @@ def login():
                 return response
             return jsonify({"error": "wrong password"}), 401
     return jsonify({"error": "no user found for this email"}), 404
+
+
+@app_views.route('/auth_session/logout',
+                 strict_slashes=False, methods=['DELETE'])
+def logout():
+    """ logout route """
+    from api.v1.app import auth
+    from flask import abort
+    if auth.destroy_session(request):
+        return jsonify({}), 200
+    abort(404)
+
