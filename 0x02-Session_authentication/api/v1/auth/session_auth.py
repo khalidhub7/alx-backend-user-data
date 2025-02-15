@@ -22,3 +22,14 @@ class SessionAuth(Auth):
         if session_id and isinstance(session_id, str):
             return self.user_id_by_session_id.get(session_id)
         return None
+
+    def current_user(self, request=None):
+        """ return user obj based on session_id """
+        try:
+            session_id = self.session_cookie(request)
+            user_id = self.user_id_by_session_id.get(session_id)
+            from models.user import User
+            user = User.get(user_id)
+            return user
+        except Exception:
+            return None
