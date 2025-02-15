@@ -22,16 +22,17 @@ class SessionDBAuth(SessionExpAuth):
         if session_id:
             UserSession.load_from_file()
 
-            sessions = UserSession.search({'session_id': session_id})
+            sessions = UserSession.search(
+                {'session_id': session_id})
             if len(sessions) != 0:
                 from datetime import timedelta, datetime
                 created_at = sessions[0].created_at
-                expiration_date = created_at + \
-                    timedelta(seconds=self.session_duration)
+                expiration_date = created_at + timedelta(
+                    seconds=self.session_duration)
                 if self.session_duration <= 0:
-                    return sessions[0].user_id  # Return user_id instead of id
+                    return sessions[0].user_id
                 if expiration_date > datetime.now():
-                    return sessions[0].user_id  # Return user_id instead of id
+                    return sessions[0].user_id
         return None
 
     def destroy_session(self, request=None):
