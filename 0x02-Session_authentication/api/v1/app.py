@@ -50,10 +50,14 @@ def beforerequest():
                     '/api/v1/forbidden/']
     if auth is not None and \
             auth.require_auth(request.path, dontneedauth):
-        if not auth.authorization_header(request):
-            abort(401)
-        if not auth.current_user(request):
-            abort(403)
+        auth_header = auth.authorization_header(request)
+        if not auth_header:
+            abort(401)  # unauthorized
+
+        user = auth.current_user(request)
+        if not user:
+            abort(403)  # forbidden
+        request.current_user = user
 
 
 if __name__ == "__main__":
