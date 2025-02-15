@@ -30,6 +30,7 @@ class SessionAuth(Auth):
             if session_id:
                 # here it use appropriate (user_id_for_session_id) func
                 # (user_id_for_session_id) that control expiration
+                # so (session_auth) or (session_exp_auth)'s (user_id_for_session_id)
                 user_id = self.user_id_for_session_id(session_id)
                 if user_id:
                     from models.user import User
