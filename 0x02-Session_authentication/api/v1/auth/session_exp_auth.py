@@ -26,28 +26,18 @@ class SessionExpAuth(SessionAuth):
         return None
 
     def user_id_for_session_id(self, session_id=None):
-        """Return user_id for a given session_id based on conditions."""
-        if session_id is None or session_id not in self.user_id_by_session_id:
-            return None
-
-        session_dict = self.user_id_by_session_id.get(session_id)
-        if not session_dict:
-            return None
-
-        user_id = session_dict.get('user_id')
-        if user_id is None:
-            return None
-
-        if self.session_duration <= 0:
-            return user_id
-
-        created_at = session_dict.get('created_at')
-        if created_at is None:
-            return None
-
-        from datetime import timedelta, datetime
-        expiration_date = created_at + timedelta(seconds=self.session_duration)
-        if expiration_date > datetime.now():
-            return user_id
-
+        """ overload user_id_for_session_id """
+        if session_id and session_id in self.user_id_by_session_id:
+            session_dict = self.user_id_by_session_id.get(session_id)
+            user_id = session_dict.get('user_id')
+            if session_dict and user_id:
+                if self.session_duration <= 0:
+                    return user_id
+                created_at = session_dict.get('created_at')
+                if created_at:
+                    from datetime import timedelta, datetime
+                    expiration_date = created_at + timedelta(
+                        seconds=self.session_duration)
+                    if expiration_date > datetime.now():
+                        return user_id
         return None

@@ -25,14 +25,23 @@ class SessionAuth(Auth):
 
     def current_user(self, request=None):
         """ return user obj based on session_id """
-        try:
+        if request:
             session_id = self.session_cookie(request)
-            user_id = self.user_id_by_session_id.get(session_id)
-            from models.user import User
-            user = User.get(user_id)
-            return user
-        except Exception:
-            return None
+            if session_id:
+                data = self.user_id_by_session_id.get(session_id)
+                user_id = None
+                if isinstance(data, dict):
+                    # mean session_exp_auth that call current_user
+                    user_id = data.get('user_id')
+                elif isinstance(data, str):
+                    # mean session_auth that call current_user
+                    user_id = data
+                if user_id:
+                    from models.user import User
+                    user = User.get(user_id)
+                    if user:
+                        return user
+        return None
 
     def destroy_session(self, request=None):
         """ deletes the user session / logout """
