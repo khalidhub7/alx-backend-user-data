@@ -40,6 +40,7 @@ class SessionDBAuth(SessionExpAuth):
         """ overload to destroy the UserSession """
         session_id = self.session_cookie(request)
         if session_id:
+            UserSession.load_from_file()
             sessions = UserSession.search(
                 {'session_id': session_id})
             if len(sessions) != 0:
