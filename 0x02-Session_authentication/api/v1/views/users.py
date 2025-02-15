@@ -27,10 +27,8 @@ def view_one_user(user_id: str = None) -> str:
     """
     if user_id == 'me':
         user = request.current_user
-        if user:
-            return jsonify(user.to_json())
-        abort(404)
-    user = User.get(user_id)
+    else:
+        user = User.get(user_id)
     if user:
         return jsonify(user.to_json())
     abort(404)

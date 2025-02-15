@@ -18,10 +18,13 @@ class Auth:
         excluded_paths: paths that not require auth """
         if len(path) != 0 and len(excluded_paths) != 0:
             for expath in excluded_paths:
-                p = expath.split('/')[-1].rstrip('*')  # like 'stat'
-                last_part = [i for i in path.split(
-                    '/') if i][-1]  # like 'status'
-                if last_part.startswith(p):
+                if '*' in path:
+                    p = expath.split('/')[-1].rstrip('*')  # like 'stat'
+                    last_part = [i for i in path.split(
+                        '/') if i][-1]  # like 'status'
+                    if last_part.startswith(p):
+                        return False
+                if path == expath or path + '/' == expath:
                     return False
         return True
 

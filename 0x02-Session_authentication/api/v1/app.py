@@ -13,11 +13,12 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
 auth = None
-if os.getenv('AUTH_TYPE'):
-    if os.getenv('AUTH_TYPE') == 'auth':
+auth_type = os.getenv('AUTH_TYPE')
+if auth_type:
+    if auth_type == 'auth':
         from api.v1.auth.auth import Auth
         auth = Auth()
-    if os.getenv('AUTH_TYPE') == 'basic_auth':
+    if auth_type == 'basic_auth':
         from api.v1.auth.basic_auth import BasicAuth
         auth = BasicAuth()
 
@@ -46,10 +47,11 @@ def forbidden_page(err):
 @app.before_request
 def beforerequest():
     """ before request method """
-    dontneedauth = ['/api/v1/status/', '/api/v1/unauthorized/',
-                    '/api/v1/forbidden/']
-    if auth is not None and \
-            auth.require_auth(request.path, dontneedauth):
+    excluded_Paths = ['/api/v1/status/', '/api/v1\
+/unauthorized/', '/api/v1/forbidden/']
+    isAuthNeeded = auth.require_auth(request.path, excluded_Paths)
+
+    if auth and isAuthNeeded:
         auth_header = auth.authorization_header(request)
         if not auth_header:
             abort(401)  # unauthorized
