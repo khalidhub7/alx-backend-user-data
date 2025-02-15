@@ -2,6 +2,7 @@
 """ store Session IDs in db (file) """
 from models.base import Base
 
+
 class UserSession(Base):
     """ user session class """
 
