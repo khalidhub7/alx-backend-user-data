@@ -28,7 +28,9 @@ class DB:
 
     def add_user(self, email, hashed_password):
         """ add_user to the users table """
-        user = User(email=email, hashed_password=hashed_password)
-        self._session.add(user)
-        self._session.commit()
-        return user
+        if isinstance(email, str) and \
+                isinstance(hashed_password, str):
+            user = User(email=email, hashed_password=hashed_password)
+            self._session.add(user)
+            self._session.commit()
+            return user
