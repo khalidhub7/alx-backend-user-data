@@ -12,8 +12,7 @@ class DB:
 
     def __init__(self) -> None:
         """ initialize a new DB instance """
-        self._engine = create_engine(
-            "mysql://khalid77:0000@localhost/user_auth", echo=True)
+        self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -28,9 +27,8 @@ class DB:
 
     def add_user(self, email, hashed_password):
         """ add_user to the users table """
-        if isinstance(email, str) and \
-                isinstance(hashed_password, str):
-            user = User(email=email, hashed_password=hashed_password)
-            self._session.add(user)
-            self._session.commit()
-            return user
+        user = User(email=email,
+                    hashed_password=hashed_password)
+        self._session.add(user)
+        self._session.commit()
+        return user
