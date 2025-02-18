@@ -12,9 +12,9 @@ class DB:
 
     def __init__(self) -> None:
         """ initialize a new DB instance """
-        # self._engine = create_engine("sqlite:///a.db", echo=False)
-        self._engine = create_engine(
-            "mysql://khalid77:0000@localhost/user_auth", echo=False)
+        self._engine = create_engine("sqlite:///a.db", echo=False)
+        # self._engine = create_engine(
+        #    "mysql://khalid77:0000@localhost/user_auth", echo=False)
 
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
