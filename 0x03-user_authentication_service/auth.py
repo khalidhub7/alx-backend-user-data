@@ -3,7 +3,7 @@
 from bcrypt import hashpw, gensalt
 
 
-def _hash_password(password):
+def _hash_password(password) -> bytes:
     """ hash password """
     return hashpw(password.encode('utf-8'),
                   salt=gensalt())
