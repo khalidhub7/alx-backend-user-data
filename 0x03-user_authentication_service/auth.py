@@ -2,7 +2,7 @@
 """ auth module """
 from db import DB
 from user import User
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy.orm.exc import NoResultFound
 
 
@@ -29,3 +29,12 @@ with the authentication database. """
             except NoResultFound:
                 return self._db.add_user(
                     email, _hash_password(password))
+
+    def valid_login(self, email, password):
+        """ credentials validation method """
+        try:
+            user = self._db.find_user_by(email=email)
+            return checkpw(password.encode(),
+                           user.hashed_password.encode())
+        except Exception:
+            return False
