@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ main app """
-from wrappers import wrap_register, wrap_login, AUTH
+from wrappers import (AUTH, wrap_register,
+                      wrap_login, wrap_logout)
 from flask import Flask, jsonify
 app = Flask(__name__)
 
@@ -25,6 +26,14 @@ def register(email, password):
 @wrap_login
 def login():
     """ login route 'page' """
+    pass
+
+
+@app.route('/sessions', strict_slashes=False,
+           methods=['DELETE'])
+@wrap_logout
+def logout():
+    """ logout route 'page' """
     pass
 
 

@@ -1,59 +1,65 @@
 #!/usr/bin/env python3
-""" auth module """
-from db import DB
-from user import User
-from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy.orm.exc import NoResultFound
+""" wrapper functions to modify
+route behavior """
+from flask import request, jsonify, abort
+from auth import Auth
+AUTH = Auth()
+
+# request credentials
+email = request.form.get('email')
+password = request.form.get('password')
 
 
-def _hash_password(password: str) -> bytes:
-    """ hash password """
-    return hashpw(password.encode('utf-8'),
-                  salt=gensalt())
-
-
-def _generate_uuid() -> str:
-    """ generate uuid """
-    from uuid import uuid4
-    return str(uuid4())
-
-
-class Auth:
-    """ Auth class to interact \
-with the authentication database. """
-
-    def __init__(self):
-        self._db = DB()
-
-    def register_user(self, email: str, password: str
-                      ) -> User:
-        """ register_user method """
-        if email and password:
-            try:
-                user = self._db.find_user_by(email=email)
-                raise ValueError(f"User <{email}> already exists")
-            except NoResultFound:
-                return self._db.add_user(
-                    email, _hash_password(password))
-
-    def valid_login(self, email: str, password: str) -> bool:
-        """ credentials validation method """
+# register_route
+def wrap_register(func):
+    """ register_route behavior """
+    def wrapped_register():
+        if not email or not password:
+            return jsonify({
+                "message": "missing email or password"
+            }), 400
         try:
-            user = self._db.find_user_by(email=email)
-            stored_pswd = user.hashed_password.encode() if isinstance(
-                user.hashed_password, str) else user.hashed_password
+            func(email, password)
+            return jsonify({
+                "email": f"{email}", "message": "user created"
+            }), 200
+        except ValueError:
+            return jsonify({
+                "message": "email already registered"
+            }), 400
+    return wrapped_register
 
-            return checkpw(password.encode(), stored_pswd)
-        except Exception:
-            return False
 
-    def create_session(self, email: str) -> str:
-        """ create session """
+# login_route
+def wrap_login(func):
+    """ login_route behavior """
+    def wrapped_login():
         try:
-            user = self._db.find_user_by(email=email)
-            sess_id = _generate_uuid()
-            self._db.update_user(
-                user.id, session_id=sess_id)
-            return sess_id
+            # validate credentials
+            isvalid = AUTH.valid_login(email, password)
+            if isvalid:
+                sess_id = AUTH.create_session(email)
+                response = jsonify({
+                    "email": f"{email}", "message": "logged in"
+                })
+                response.set_cookie('session_id', sess_id)
+                return response, 200
+            # else
+            raise Exception('invalid credentials')
         except Exception:
-            return None
+            abort(401)
+    return wrapped_login
+
+
+def wrap_logout(func):
+    """ logout_route behavior """
+    def wrapped_logout():
+        try:
+            sess_cookie = request.cookies.get('session_id')
+            user = AUTH.get_user_from_session_id(sess_cookie)
+            AUTH.destroy_session(user.id)
+            from flask import redirect
+            redirect('app.sessions')
+        except Exception:
+            abort(403)
+    return wrapped_logout
