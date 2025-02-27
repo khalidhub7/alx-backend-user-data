@@ -34,7 +34,7 @@ with the authentication database. """
         """ credentials validation method """
         try:
             user = self._db.find_user_by(email=email)
-            return checkpw(password.encode('utf-8'),
-                           user.hashed_password.encode())
+            return checkpw(password.encode(),
+                           user.hashed_password)
         except Exception:
             return False
