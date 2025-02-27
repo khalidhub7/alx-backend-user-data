@@ -71,3 +71,15 @@ with the authentication database. """
             return self._db.update_user(user_id, session_id=None)
         except Exception:
             return None
+
+    def get_reset_password_token(self, email: str):
+        """ generate reset password token """
+        try:
+            if email:
+                user = self._db.find_user_by(email=email)
+                if not user:
+                    raise ValueError('user does not exist in db')
+                reset_token = _generate_uuid()
+                self._db.update_user(user.id, reset_token=reset_token)
+        except Exception:
+            return None
