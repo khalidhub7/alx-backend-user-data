@@ -42,6 +42,7 @@ with the authentication database. """
             user = self._db.find_user_by(email=email)
             stored_pswd = user.hashed_password.encode() if isinstance(
                 user.hashed_password, str) else user.hashed_password
+
             return checkpw(password.encode(), stored_pswd)
         except Exception:
             return False
