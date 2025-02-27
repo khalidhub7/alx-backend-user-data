@@ -44,3 +44,14 @@ with the authentication database. """
                            user.hashed_password)
         except Exception:
             return False
+
+    def create_session(self, email: str) -> str:
+        """ create session """
+        try:
+            user = self._db.find_user_by(email=email)
+            sess_id = _generate_uuid()
+            self._db.update_user(
+                user.id, session_id=sess_id)
+            return sess_id
+        except Exception:
+            return None
