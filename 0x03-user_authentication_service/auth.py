@@ -61,10 +61,6 @@ with the authentication database. """
     def get_user_from_session_id(self, session_id: str) -> User:
         """ return user by session_id """
         try:
-            if session_id:
-                user = self._db.find_user_by(session_id)
-                if user:
-                    return user
-            raise Exception
+            return self._db.find_user_by(session_id)
         except Exception:
             return None
