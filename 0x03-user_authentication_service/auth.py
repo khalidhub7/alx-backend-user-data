@@ -39,7 +39,7 @@ with the authentication database. """
         except Exception:
             return False
 
-    def _generate_uuid() -> str:
+    def _generate_uuid(self) -> str:
         """ generate uuid """
         from uuid import uuid4
         return str(uuid4())
