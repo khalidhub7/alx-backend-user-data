@@ -60,10 +60,13 @@ def wrap_logout(func):
     def wrapped_logout():
         try:
             sess_cookie = request.cookies.get('session_id')
-            user = AUTH.get_user_from_session_id(sess_cookie)
-            AUTH.destroy_session(user.id)
-            from flask import redirect
-            return redirect('/')
+            if sess_cookie:
+                user = AUTH.get_user_from_session_id(sess_cookie)
+                if user:
+                    AUTH.destroy_session(user.id)
+                    from flask import redirect
+                    return redirect('/')
+            raise Exception
         except Exception:
             abort(403)
     return wrapped_logout
