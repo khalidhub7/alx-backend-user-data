@@ -12,6 +12,12 @@ def _hash_password(password: str) -> bytes:
                   salt=gensalt())
 
 
+def _generate_uuid() -> str:
+    """ generate uuid """
+    from uuid import uuid4
+    return str(uuid4())
+
+
 class Auth:
     """ Auth class to interact \
 with the authentication database. """
@@ -38,8 +44,3 @@ with the authentication database. """
                            user.hashed_password)
         except Exception:
             return False
-
-    def _generate_uuid(self) -> str:
-        """ generate uuid """
-        from uuid import uuid4
-        return str(uuid4())
