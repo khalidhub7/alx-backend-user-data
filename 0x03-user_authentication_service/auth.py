@@ -57,3 +57,10 @@ with the authentication database. """
             return sess_id
         except Exception:
             return None
+
+    def get_user_from_session_id(self, session_id: str) -> User:
+        """ return user by session_id """
+        try:
+            return self._db.find_user_by(session_id)
+        except Exception:
+            return None
