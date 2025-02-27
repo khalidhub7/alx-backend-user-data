@@ -38,3 +38,8 @@ with the authentication database. """
                            user.hashed_password)
         except Exception:
             return False
+
+    def _generate_uuid() -> str:
+        """ generate uuid """
+        from uuid import uuid4
+        return str(uuid4())
