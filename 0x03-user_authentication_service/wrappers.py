@@ -75,6 +75,7 @@ def wrap_logout(func):
 
 # reset_token_get_route
 def generate_pwd_token(func):
+    """ reset_password 'post'_route behavior """
     @wraps(func)
     def _generate_pwd_token():
         try:
@@ -90,6 +91,7 @@ def generate_pwd_token(func):
 
 # update_password
 def update_pwd(func):
+    """ reset_password 'put'_route behavior """
     @wraps(func)
     def wrap_update_pwd():
         email = request.form.get('email')
