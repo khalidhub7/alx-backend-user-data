@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """ main app """
-from wrappers import (
-    AUTH, wrap_register, generate_pwd_token,
-    wrap_login, wrap_logout, update_pwd)
+from wrappers import (user_profile,
+                      AUTH, wrap_register, generate_pwd_token,
+                      wrap_login, wrap_logout, update_pwd)
 from flask import Flask, jsonify
 app = Flask(__name__)
 
@@ -51,6 +51,14 @@ def get_reset_password_token():
 @update_pwd
 def update_password():
     """ set new password """
+    pass
+
+
+@app.route('/profile', strict_slashes=False,
+           methods=['GET'])
+@user_profile
+def profile():
+    """ user profile """
     pass
 
 

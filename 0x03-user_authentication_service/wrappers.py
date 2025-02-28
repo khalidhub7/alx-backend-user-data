@@ -105,3 +105,18 @@ def update_pwd(func):
         except ValueError:
             abort(403)
     return wrap_update_pwd
+
+
+# user profile
+def user_profile(func):
+    """ user profile route behavior """
+    @wraps(func)
+    def wrap_userprofile():
+        session_id = request.form.get('session_id')
+        user = AUTH.get_user_from_session_id(session_id)
+        if user and session_id:
+            return jsonify({
+                "email": f"{user.email}"
+            }), 200
+        abort(403)
+    return wrap_userprofile
