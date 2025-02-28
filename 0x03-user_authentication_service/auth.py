@@ -73,7 +73,8 @@ with the authentication database. """
             return None
 
     def get_reset_password_token(self, email: str):
-        """ generate reset password token """
+        """ generate reset password token
+         and update it in db """
         try:
             user = self._db.find_user_by(email=email)
             reset_token = _generate_uuid()
@@ -81,3 +82,18 @@ with the authentication database. """
             return reset_token
         except Exception:
             raise ValueError
+
+    def update_password(self, reset_token: str,
+                        password: str) -> None:
+        """ update password method """
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+            if user:
+                hashpwd = _hash_password(password)
+                self._db.update_user(
+                    hashed_password=hashpwd,
+                    reset_token=None)
+                return None
+            raise ValueError
+        except Exception:
+            return None
