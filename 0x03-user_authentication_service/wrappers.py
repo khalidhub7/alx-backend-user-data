@@ -100,6 +100,6 @@ def updatepwd(func):
             return jsonify({
                 "email": f"{email}", "message": "Password updated"
             }), 200
-        except BaseException:
+        except Exception:
             abort(403)
     return wrapper
