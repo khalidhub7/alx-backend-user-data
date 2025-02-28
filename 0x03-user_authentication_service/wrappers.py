@@ -11,7 +11,7 @@ AUTH = Auth()
 def wrap_register(func):
     """ register_route behavior """
     @wraps(func)
-    def wrapper():
+    def _wrap_register():
         email = request.form.get('email')
         password = request.form.get('password')
         if not email or not password:
@@ -27,14 +27,14 @@ def wrap_register(func):
             return jsonify({
                 "message": "email already registered"
             }), 400
-    return wrapper
+    return _wrap_register
 
 
 # login_route
 def wrap_login(func):
     """ login_route behavior """
     @wraps(func)
-    def wrapper():
+    def _wrap_login():
         try:
             email = request.form.get('email')
             password = request.form.get('password')
@@ -51,14 +51,14 @@ def wrap_login(func):
             raise Exception('invalid credentials')
         except Exception:
             abort(401)
-    return wrapper
+    return _wrap_login
 
 
 # logout_route
 def wrap_logout(func):
     """ logout_route behavior """
     @wraps(func)
-    def wrapper():
+    def _wrap_logout():
         try:
             sess_cookie = request.cookies.get('session_id')
             if sess_cookie:
@@ -70,13 +70,13 @@ def wrap_logout(func):
             raise Exception
         except Exception:
             abort(403)
-    return wrapper
+    return _wrap_logout
 
 
 # reset_token_get_route
-def generate_pwdtoken(func):
+def generate_pwd_token(func):
     @wraps(func)
-    def wrapper():
+    def _generate_pwd_token():
         try:
             email = request.form.get('email')
             reset_token = AUTH.get_reset_password_token(email)
@@ -85,21 +85,21 @@ def generate_pwdtoken(func):
             }), 200
         except Exception:
             abort(403)
-    return wrapper
+    return _generate_pwd_token
 
 
 # update_password
-def updatepwd(func):
+def update_pwd(func):
     @wraps(func)
-    def wrapper():
+    def wrap_update_pwd():
         email = request.form.get('email')
-        password = request.form.get('password')
+        new_password = request.form.get('new_password')
         reset_token = request.form.get('reset_token')
         try:
-            AUTH.update_password(reset_token, password)
+            AUTH.update_password(reset_token, new_password)
             return jsonify({
-                "email": f"{email}", "message": "Password updated"
+                "email": email, "message": "Password updated"
             }), 200
-        except Exception:
+        except ValueError:
             abort(403)
-    return wrapper
+    return wrap_update_pwd

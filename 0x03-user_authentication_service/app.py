@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """ main app """
 from wrappers import (
-    AUTH, wrap_register, generate_pwdtoken,
-    wrap_login, wrap_logout, updatepwd)
+    AUTH, wrap_register, generate_pwd_token,
+    wrap_login, wrap_logout, update_pwd)
 from flask import Flask, jsonify
 app = Flask(__name__)
 
@@ -40,7 +40,7 @@ def logout():
 
 @app.route('/reset_password', strict_slashes=False,
            methods=['POST'])
-@generate_pwdtoken
+@generate_pwd_token
 def get_reset_password_token():
     """ get 'reset password token' """
     pass
@@ -48,7 +48,7 @@ def get_reset_password_token():
 
 @app.route('/reset_password', strict_slashes=False,
            methods=['PUT'])
-@updatepwd
+@update_pwd
 def update_password():
     """ set new password """
     pass
