@@ -54,6 +54,7 @@ def wrap_login(func):
     return wrapped_login
 
 
+# logout_route
 def wrap_logout(func):
     """ logout_route behavior """
     @wraps(func)
@@ -70,3 +71,18 @@ def wrap_logout(func):
         except Exception:
             abort(403)
     return wrapped_logout
+
+
+# reset_token_get_route
+def password_token(func):
+    @wraps(func)
+    def wrapped_pwd_token():
+        try:
+            email = request.form.get('email')
+            reset_token = AUTH.get_reset_password_token(email)
+            return jsonify({
+                "email": f"{email}", "reset_token": f"{reset_token}"
+            }), 200
+        except Exception:
+            abort(403)
+    return wrapped_pwd_token

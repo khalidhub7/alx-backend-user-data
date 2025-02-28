@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """ main app """
-from wrappers import (AUTH, wrap_register,
-                      wrap_login, wrap_logout)
+from wrappers import (
+    AUTH, wrap_register, password_token,
+    wrap_login, wrap_logout)
 from flask import Flask, jsonify
 app = Flask(__name__)
 
@@ -34,6 +35,14 @@ def login():
 @wrap_logout
 def logout():
     """ logout route 'page' """
+    pass
+
+
+@app.route('/reset_password', strict_slashes=False,
+           methods=['POST'])
+@password_token
+def get_reset_password_token():
+    """ get 'reset password token' """
     pass
 
 
