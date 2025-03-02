@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-""" wrapper functions to modify
-route behavior """
+""" wrap functions to modify routes behavior """
 from flask import request, jsonify, abort
 from functools import wraps
 from auth import Auth
@@ -12,6 +11,7 @@ def wrap_register(func):
     """ register_route behavior """
     @wraps(func)
     def _wrap_register():
+        # retrieve data from form
         email = request.form.get('email')
         password = request.form.get('password')
         if not email or not password:
@@ -45,6 +45,7 @@ def wrap_login(func):
                 response = jsonify({
                     "email": f"{email}", "message": "logged in"
                 })
+                # set a cookie to the request
                 response.set_cookie('session_id', sess_id)
                 return response, 200
             # else
@@ -64,16 +65,19 @@ def wrap_logout(func):
             if sess_cookie:
                 user = AUTH.get_user_from_session_id(sess_cookie)
                 if user:
+                    # remove session_id in db and cookies
                     AUTH.destroy_session(user.id)
-                    from flask import redirect
-                    return redirect('/')
+                    from flask import redirect, make_response
+                    response = make_response(redirect('/'))
+                    response.set_cookie('session_id', '', expires=0)
             raise Exception
         except Exception:
             abort(403)
     return _wrap_logout
 
 
-# reset_token_get_route
+# generate reset_token and
+# update user.reset_token in db
 def generate_pwd_token(func):
     """ reset_password 'post'_route behavior """
     @wraps(func)
@@ -89,7 +93,7 @@ def generate_pwd_token(func):
     return _generate_pwd_token
 
 
-# update_password
+# check if reset_token valid && update_password
 def update_pwd(func):
     """ reset_password 'put'_route behavior """
     @wraps(func)
