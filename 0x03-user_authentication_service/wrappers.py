@@ -70,6 +70,7 @@ def wrap_logout(func):
                     from flask import redirect, make_response
                     response = make_response(redirect('/'))
                     response.set_cookie('session_id', '', expires=0)
+                    return response
             raise Exception
         except Exception:
             abort(403)
